@@ -1,0 +1,32 @@
+# Project-specific files and directories
+.dart_tool/
+.fvm/
+.idea/
+.vscode/
+
+# Build artifacts
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.env
+*.iml
+*.lock
+*.info.json
+
+# Platform-specific build artifacts and configurations
+android/app/build/
+android/.gradle/
+android/local.properties
+ios/Runner.xcworkspace/xcuserdata/
+ios/Flutter/Generated.xcconfig
+ios/.symlinks/
+ios/Pods/
+
+# Dependency caches
+pubspec.lock
+
+# IDE-specific files (e.g., Android Studio, VS Code)
+*.iws
+*.ipr
+.DS_Store
