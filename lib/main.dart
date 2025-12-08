@@ -1,7 +1,9 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
-import 'package:task_distribution/state/page.dart';
-import 'package:task_distribution/state/robot.dart';
+import 'package:task_distribution/service/robot.dart';
+import 'package:task_distribution/provider/page.dart';
+import 'package:task_distribution/provider/robot.dart';
+import 'package:task_distribution/provider/socket.dart';
 import 'package:window_manager/window_manager.dart';
 import "screen/home.dart";
 
@@ -30,7 +32,17 @@ class TaskDistribution extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PageProvider()),
-        ChangeNotifierProvider(create: (_) => RobotProvider()),
+        ChangeNotifierProvider(
+          lazy: false,
+          create: (_) => ServerProvider("ws://127.0.0.1:8000/ws"),
+        ),
+        ChangeNotifierProxyProvider<ServerProvider, RobotProvider>(
+          create: (_) => RobotProvider(RobotClient('http://127.0.0.1:8000')),
+          update: (_, serverProvider, robotProvider) {
+            robotProvider!.bindServer(serverProvider);
+            return robotProvider;
+          },
+        ),
       ],
       child: FluentApp(
         title: "Task Distribution",
