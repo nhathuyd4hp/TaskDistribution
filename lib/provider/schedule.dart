@@ -34,4 +34,13 @@ class ScheduleProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Future<void> delete(Schedule schedule) async {
+    final (success, message) = await repository.delete(schedule);
+    if (success) {
+      server.notification(message);
+    } else {
+      server.warning(message);
+    }
+  }
 }

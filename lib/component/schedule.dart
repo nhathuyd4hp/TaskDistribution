@@ -147,7 +147,12 @@ class _ScheduleManagementState extends State<ScheduleManagement> {
               ),
             ],
           ),
-          FilledButton(onPressed: () {}, child: const Text('Xóa')),
+          FilledButton(
+            onPressed: () {
+              context.read<ScheduleProvider>().delete(schedule);
+            },
+            child: const Text('Xóa'),
+          ),
         ],
       ),
     );

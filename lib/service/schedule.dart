@@ -20,4 +20,17 @@ class ScheduleClient {
         .toList();
     return schedules;
   }
+
+  Future<(bool, String)> delete(Schedule schedule) async {
+    try {
+      final url = Uri.parse("$backend/api/schedule/${schedule.id}");
+      final response = await http.delete(url);
+      if (response.statusCode != 200) {
+        return (false, "Thất bại");
+      }
+      return (true, "Thành công");
+    } catch (e) {
+      return (false, e.toString());
+    }
+  }
 }

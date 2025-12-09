@@ -98,6 +98,7 @@ class _RobotManagementState extends State<RobotManagement> {
       padding: const EdgeInsets.all(16),
       decoration: getBoxDecorator,
       child: Row(
+        spacing: 25,
         children: [
           Expanded(
             child: Text(
@@ -127,6 +128,74 @@ class _RobotManagementState extends State<RobotManagement> {
                       ),
                       FilledButton(
                         child: Text('Chạy'),
+                        onPressed: () {
+                          Navigator.pop(dialogContext);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+          FilledButton(
+            child: Text("Cài lịch chạy"),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext dialogContext) {
+                  return ContentDialog(
+                    constraints: BoxConstraints(
+                      maxWidth: 500.0,
+                      maxHeight: 350.0,
+                    ),
+                    title: Text('Tạo lịch chạy'),
+                    content: Column(
+                      spacing: 25,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Ngày bắt đầu:"),
+                            DatePicker(
+                              selected: DateTime.now(),
+                              onChanged: (time) {},
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Ngày kết thúc:"),
+                            DatePicker(
+                              selected: DateTime.now(),
+                              onChanged: (time) {},
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Giờ chạy"),
+                            TimePicker(
+                              selected: DateTime.now(),
+                              onChanged: (time) {},
+                              hourFormat: HourFormat.HH,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    actions: <Widget>[
+                      Button(
+                        child: Text('Hủy'),
+                        onPressed: () {
+                          Navigator.pop(dialogContext);
+                        },
+                      ),
+                      FilledButton(
+                        child: Text('Cài'),
                         onPressed: () {
                           Navigator.pop(dialogContext);
                         },
