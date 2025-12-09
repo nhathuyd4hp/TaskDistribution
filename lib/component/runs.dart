@@ -65,12 +65,12 @@ class _RunsManagementState extends State<RunsManagement> {
       ),
       content: Padding(
         padding: const EdgeInsets.all(25),
-        child: table(context, runProvider, nameFilter),
+        child: table(context, runProvider),
       ),
     );
   }
 
-  Widget table(BuildContext context, RunProvider provider, String runFilter) {
+  Widget table(BuildContext context, RunProvider provider) {
     if (provider.isLoading) {
       return Center(child: ProgressRing());
     }

@@ -1,11 +1,13 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:task_distribution/provider/run.dart';
+import 'package:task_distribution/provider/schedule.dart';
 import 'package:task_distribution/service/robot.dart';
 import 'package:task_distribution/provider/page.dart';
 import 'package:task_distribution/provider/robot.dart';
 import 'package:task_distribution/provider/socket.dart';
 import 'package:task_distribution/service/run.dart';
+import 'package:task_distribution/service/schedule.dart';
 import 'package:window_manager/window_manager.dart';
 import "screen/home.dart";
 
@@ -56,6 +58,16 @@ class TaskDistribution extends StatelessWidget {
           update: (_, serverProvider, runProvider) {
             runProvider!.bindServer();
             return runProvider;
+          },
+        ),
+        ChangeNotifierProxyProvider<ServerProvider, ScheduleProvider>(
+          create: (BuildContext context) => ScheduleProvider(
+            repository: ScheduleClient('http://127.0.0.1:8000'),
+            server: context.read<ServerProvider>(),
+          ),
+          update: (_, serverProvider, scheduleProvider) {
+            scheduleProvider!.bindServer();
+            return scheduleProvider;
           },
         ),
       ],
