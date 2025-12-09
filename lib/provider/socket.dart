@@ -1,3 +1,4 @@
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -10,6 +11,22 @@ class ServerProvider extends ChangeNotifier {
   // errorMessage
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
+  // Latest message
+  String? _latestMessage;
+  String? get latestMessage => _latestMessage;
+  void clearLatestMessage() {
+    _latestMessage = null;
+  }
+
+  void clearErrorMessage() {
+    _errorMessage = null;
+  }
+
+  void setLatestMessage(String message) {
+    _latestMessage = message;
+    notifyListeners();
+  }
+
   // Client
   late WebSocketChannel channel;
   // Khởi tạo
@@ -26,27 +43,33 @@ class ServerProvider extends ChangeNotifier {
     try {
       await channel.ready;
       _currentStatus = ConnectionStatus.connected;
+      _errorMessage = null;
       notifyListeners();
       channel.stream.listen(
-        (message) {},
+        (message) {
+          _latestMessage = message.toString();
+          notifyListeners();
+        },
         onDone: () {
+          _errorMessage = "Mất kết nối đến server";
           _reconnect(url);
         },
         onError: (error) {
+          _errorMessage = error.toString();
           _reconnect(url);
         },
         cancelOnError: true,
       );
-    } catch (err) {
+    } catch (error) {
+      _errorMessage = error.toString();
       _reconnect(url);
     }
   }
 
   Future<void> _reconnect(String url) async {
     _currentStatus = ConnectionStatus.disconnected;
-    _errorMessage = "Không thể kết nối đến server";
     notifyListeners(); // Thông báo đã mất kết nối
     await Future.delayed(Duration(seconds: 5)); // Kết nối lại sau 5s
-    _connect(url);
+    await _connect(url);
   }
 }

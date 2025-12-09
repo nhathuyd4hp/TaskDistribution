@@ -47,7 +47,7 @@ class TaskDistribution extends StatelessWidget {
       child: FluentApp(
         title: "Task Distribution",
         debugShowCheckedModeBanner: false,
-        home: const Main(),
+        home: Home(),
       ),
     );
   }

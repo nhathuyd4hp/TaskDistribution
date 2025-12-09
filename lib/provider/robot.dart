@@ -23,6 +23,7 @@ class RobotProvider extends ChangeNotifier {
     }
     if (server.status == ConnectionStatus.connected) {
       _isLoading = false;
+      _errorMessage = null;
       _robots = await repository.getRobots();
     }
     if (server.status == ConnectionStatus.disconnected) {

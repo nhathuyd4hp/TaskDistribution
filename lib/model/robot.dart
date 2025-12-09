@@ -1,6 +1,6 @@
 class Parameters {
   final String name;
-  final String? defaultValue;
+  final dynamic defaultValue;
   final bool required;
   final String annotation;
 

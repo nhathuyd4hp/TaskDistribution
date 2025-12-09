@@ -3,52 +3,95 @@ import "package:provider/provider.dart";
 import "package:task_distribution/model/robot.dart";
 import "package:task_distribution/provider/robot.dart";
 
-class RobotManagement extends StatelessWidget {
+class RobotManagement extends StatefulWidget {
   const RobotManagement({super.key});
+
+  @override
+  State<RobotManagement> createState() => _RobotManagementState();
+}
+
+class _RobotManagementState extends State<RobotManagement> {
+  String nameFilter = "";
 
   @override
   Widget build(BuildContext context) {
     final robotProvider = context.watch<RobotProvider>();
 
     return ScaffoldPage(
-      header: const PageHeader(title: Text('Robot')),
+      header: PageHeader(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(child: Text('Robot')),
+            Expanded(
+              child: TextBox(
+                placeholder: 'Lọc:',
+                expands: false,
+                onChanged: (value) {
+                  setState(() {
+                    nameFilter = value;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
       content: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25),
-        child: _buildContent(context, robotProvider),
+        child: table(context, robotProvider, nameFilter),
       ),
     );
   }
 
-  Widget _builDynamicInput(String annotation, dynamic defautValue) {
-    if (annotation.contains("date")) {
-      return DatePicker(selected: null);
+  Widget _buildInput(Parameters p) {
+    if (p.annotation.contains("datetime") || p.annotation.contains("date")) {
+      return DatePicker(selected: DateTime.now());
     }
-    return TextBox();
+    return TextBox(placeholder: p.name);
   }
 
-  Widget _buidInputForm(List<Parameters> parameters) {
-    return Column(
-      spacing: 25,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: parameters.map((param) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(param.name),
-            _builDynamicInput(param.annotation, param.defaultValue),
-          ],
+  Widget _buildForm(List<Parameters> parameters, void Function() onChanged) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Column(
+          spacing: 25,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: parameters.isNotEmpty
+              ? parameters.map((param) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          param.name
+                              .replaceAll("_", " ")
+                              .split(".")
+                              .last
+                              .toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      Expanded(child: _buildInput(param)),
+                    ],
+                  );
+                }).toList()
+              : [
+                  Text(
+                    "Không có tham số đầu vào",
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                  ),
+                ],
         );
-      }).toList(),
+      },
     );
   }
 
-  Widget _buildRobotAction(BuildContext context, Robot robot) {
-    final robotName = robot.name
-        .replaceAll("_", " ")
-        .split(".")
-        .last
-        .toUpperCase();
-
+  Widget _listRobot(BuildContext context, Robot robot) {
     return Container(
       margin: const EdgeInsets.only(bottom: 5),
       padding: const EdgeInsets.all(16),
@@ -58,24 +101,25 @@ class RobotManagement extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(child: Text(robotName)),
+          Expanded(
+            child: Text(
+              robot.name.replaceAll("_", " ").split(".").last.toUpperCase(),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+            ),
+          ),
           FilledButton(
             child: Text("Chạy"),
             onPressed: () {
-              if (robot.parameters.isEmpty) {
-                return;
-              }
-
               showDialog(
                 context: context,
                 builder: (BuildContext dialogContext) {
                   return ContentDialog(
                     constraints: BoxConstraints(
-                      maxWidth: 600,
-                      maxHeight: 125.0 * robot.parameters.length,
+                      maxWidth: 500.0,
+                      maxHeight: 225.0 + (25.0 * robot.parameters.length),
                     ),
                     title: Text('Nhập tham số đầu vào'),
-                    content: _buidInputForm(robot.parameters),
+                    content: _buildForm(robot.parameters, () {}),
                     actions: <Widget>[
                       Button(
                         child: Text('Hủy'),
@@ -84,9 +128,8 @@ class RobotManagement extends StatelessWidget {
                         },
                       ),
                       FilledButton(
-                        child: Text('Chạy Ngay'),
+                        child: Text('Chạy'),
                         onPressed: () {
-                          // Run before close
                           Navigator.pop(dialogContext);
                         },
                       ),
@@ -101,17 +144,45 @@ class RobotManagement extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, RobotProvider provider) {
+  Widget table(
+    BuildContext context,
+    RobotProvider provider,
+    String nameFilter,
+  ) {
     if (provider.isLoading) {
       return Center(child: ProgressRing());
     }
     if (provider.errorMessage != null) {
-      return Center(child: Text(provider.errorMessage!));
+      final String errorMessage = provider.errorMessage!;
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(FluentIcons.warning, size: 48, color: Colors.red),
+            SizedBox(height: 16),
+            Text(
+              errorMessage,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
     }
+
+    final filtered = provider.robots.where((robot) {
+      if (nameFilter.isEmpty) return true;
+      return robot.name
+          .split('.')
+          .last
+          .toLowerCase()
+          .contains(nameFilter.toLowerCase());
+    }).toList();
+
     return ListView.builder(
-      itemCount: provider.robots.length,
+      itemCount: filtered.length,
       itemBuilder: (context, index) {
-        return _buildRobotAction(context, provider.robots[index]);
+        return _listRobot(context, filtered[index]);
       },
     );
   }
