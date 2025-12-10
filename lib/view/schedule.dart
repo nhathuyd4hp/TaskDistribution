@@ -1,6 +1,5 @@
 import "package:fluent_ui/fluent_ui.dart";
 import "package:provider/provider.dart";
-import "package:task_distribution/const/box_decoration.dart";
 import "package:task_distribution/model/schedule.dart";
 import "package:task_distribution/provider/schedule.dart";
 
@@ -14,7 +13,6 @@ class ScheduleManagement extends StatefulWidget {
 class _ScheduleManagementState extends State<ScheduleManagement> {
   String nameFilter = "";
   String statusFilter = "--";
-  List<Schedule> schedules = [];
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +120,6 @@ class _ScheduleManagementState extends State<ScheduleManagement> {
     return Container(
       margin: const EdgeInsets.only(bottom: 5),
       padding: const EdgeInsets.all(16),
-      decoration: deleteBoxDecorator,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

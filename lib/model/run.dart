@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:task_distribution/const/box_decoration.dart';
 
 class Run {
   final String id;
@@ -30,18 +29,5 @@ class Run {
       createdAt: json['created_at'] as String,
       updatedAt: json['updated_at'] as String?,
     );
-  }
-
-  BoxDecoration boxDecoration() {
-    if (status == "PENDING") {
-      return postBoxDecorator;
-    }
-    if (status == "FAILURE") {
-      return deleteBoxDecorator;
-    }
-    if (status == "SUCCESS") {
-      return getBoxDecorator;
-    }
-    return getBoxDecorator;
   }
 }

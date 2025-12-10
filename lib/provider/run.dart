@@ -37,6 +37,10 @@ class RunProvider extends ChangeNotifier {
   }
 
   Future<void> download(Run run) async {
+    if (run.status != "SUCCESS") {
+      server.warning(run.result ?? "Quá trình chạy lỗi");
+      return;
+    }
     if (run.result == null) {
       server.warning("Không tìm thấy file kết quả");
       return;

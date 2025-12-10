@@ -1,5 +1,6 @@
 import "package:fluent_ui/fluent_ui.dart";
 import "package:provider/provider.dart";
+import "package:task_distribution/core/widget/text_box.dart";
 import "package:task_distribution/model/run.dart";
 import "package:task_distribution/provider/run.dart";
 
@@ -11,61 +12,78 @@ class RunsManagement extends StatefulWidget {
 }
 
 class _RunsManagementState extends State<RunsManagement> {
-  String nameFilter = "";
+  String nameContains = "";
   String statusFilter = "--";
-  List<Run> runs = [];
 
   @override
   Widget build(BuildContext context) {
     final runProvider = context.watch<RunProvider>();
+
     return ScaffoldPage(
-      header: PageHeader(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(child: Text('Lịch sử chạy')),
-            Expanded(
-              child: Row(
-                spacing: 25,
-                children: [
-                  Expanded(
-                    child: TextBox(
-                      placeholder: 'Lọc:',
-                      expands: false,
-                      onChanged: (value) {
-                        setState(() {
-                          nameFilter = value;
-                        });
-                      },
-                    ),
+      content: Column(
+        spacing: 25,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Lịch sử chạy',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+          ),
+          Row(
+            spacing: 25,
+            children: [
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Color(0xffffffff),
                   ),
-                  Expanded(
-                    child: ComboBox<String>(
-                      value: statusFilter,
-                      items: ["--", "PENDING", "SUCCESS", "FAILURE"]
-                          .map<ComboBoxItem<String>>((e) {
-                            return ComboBoxItem<String>(
-                              value: e,
-                              child: Text(e),
-                            );
-                          })
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          statusFilter = value ?? "--";
-                        });
-                      },
-                    ),
+                  child: WinTextBox(
+                    prefix: WindowsIcon(WindowsIcons.search, size: 20.0),
+                    placeholder: "Lọc theo tên",
+                    onChanged: (value) {
+                      setState(() {
+                        nameContains = value;
+                      });
+                    },
                   ),
-                ],
+                ),
               ),
+              Container(
+                padding: EdgeInsets.all(0),
+                height: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Color(0xffffffff),
+                ),
+                child: ComboBox<String>(
+                  value: statusFilter,
+                  items: ["--", "PENDING", "FAILURE", "SUCCESS"]
+                      .map<ComboBoxItem<String>>((e) {
+                        return ComboBoxItem<String>(value: e, child: Text(e));
+                      })
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      statusFilter = value ?? "--";
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Color(0xffffffff),
+              ),
+              child: table(context, runProvider),
             ),
-          ],
-        ),
-      ),
-      content: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
-        child: table(context, runProvider),
+          ),
+        ],
       ),
     );
   }
@@ -93,13 +111,13 @@ class _RunsManagementState extends State<RunsManagement> {
     }
     final filtered = provider.runs.where((run) {
       // Lọc theo nameFilter
-      final matchesName = nameFilter.isEmpty
+      final matchesName = nameContains.isEmpty
           ? true
           : run.robot
                 .split('.')
                 .last
                 .toLowerCase()
-                .contains(nameFilter.toLowerCase());
+                .contains(nameContains.toLowerCase());
 
       // Lọc theo statusFilter
       final matchesStatus = statusFilter == "--"
@@ -118,14 +136,19 @@ class _RunsManagementState extends State<RunsManagement> {
 
   Widget _listRuns(BuildContext context, Run run) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 5),
-      padding: const EdgeInsets.all(16),
-      decoration: run.boxDecoration(),
+      margin: const EdgeInsets.only(bottom: 15),
+      padding: const EdgeInsets.all(10),
+      height: 50,
+      decoration: BoxDecoration(
+        color: Color(0xfff8fafc),
+        border: Border.all(color: Color(0xffe5eaf1), width: 1.5),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
-            spacing: 50,
+            spacing: 25,
             children: [
               Text(
                 run.status,
@@ -142,11 +165,9 @@ class _RunsManagementState extends State<RunsManagement> {
             ],
           ),
           FilledButton(
-            onPressed: run.status != "SUCCESS"
-                ? null
-                : () {
-                    context.read<RunProvider>().download(run);
-                  },
+            onPressed: () {
+              context.read<RunProvider>().download(run);
+            },
             child: const Text('Kết quả'),
           ),
         ],
