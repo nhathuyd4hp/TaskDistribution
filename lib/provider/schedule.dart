@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:task_distribution/model/robot.dart';
 import 'package:task_distribution/model/schedule.dart';
 import 'package:task_distribution/provider/socket.dart';
 import 'package:task_distribution/service/schedule.dart';
@@ -37,6 +38,15 @@ class ScheduleProvider extends ChangeNotifier {
 
   Future<void> delete(Schedule schedule) async {
     final (success, message) = await repository.delete(schedule);
+    if (success) {
+      server.notification(message);
+    } else {
+      server.warning(message);
+    }
+  }
+
+  Future<void> setSchedule(Robot robot, Map<String, dynamic> schedule) async {
+    final (success, message) = await repository.setSchedule(robot, schedule);
     if (success) {
       server.notification(message);
     } else {

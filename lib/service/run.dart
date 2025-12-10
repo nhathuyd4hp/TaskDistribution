@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as p;
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -33,9 +34,11 @@ class RunClient {
       if (response.statusCode != 200) {
         return (false, "Không tìm thấy file kết quả");
       }
-      final file = File(p.join(savePath, p.basename(run.result!)));
+      final String filePath = p.join(savePath, p.basename(run.result!));
+      final file = File(filePath);
       await file.writeAsBytes(response.bodyBytes);
-      return (true, file.toString());
+      await OpenFile.open(filePath);
+      return (true, filePath);
     } catch (e) {
       return (false, e.toString());
     }

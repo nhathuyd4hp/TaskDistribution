@@ -1,8 +1,10 @@
 import "package:fluent_ui/fluent_ui.dart";
 import "package:provider/provider.dart";
 import "package:task_distribution/const/box_decoration.dart";
+import "package:task_distribution/core/widget/schedule_form.dart";
 import "package:task_distribution/model/robot.dart";
 import "package:task_distribution/provider/robot.dart";
+import "package:task_distribution/provider/schedule.dart";
 
 class RobotManagement extends StatefulWidget {
   const RobotManagement({super.key});
@@ -39,7 +41,7 @@ class _RobotManagementState extends State<RobotManagement> {
         ),
       ),
       content: Padding(
-        padding: const EdgeInsets.all(25),
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: table(context, robotProvider, nameFilter),
       ),
     );
@@ -140,70 +142,16 @@ class _RobotManagementState extends State<RobotManagement> {
           ),
           FilledButton(
             child: Text("Cài lịch chạy"),
-            onPressed: () {
-              showDialog(
+            onPressed: () async {
+              final provider = context.read<ScheduleProvider>();
+              final Map<String, dynamic>? schedule = await showDialog(
                 context: context,
                 builder: (BuildContext dialogContext) {
-                  return ContentDialog(
-                    constraints: BoxConstraints(
-                      maxWidth: 500.0,
-                      maxHeight: 350.0,
-                    ),
-                    title: Text('Tạo lịch chạy'),
-                    content: Column(
-                      spacing: 25,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Ngày bắt đầu:"),
-                            DatePicker(
-                              selected: DateTime.now(),
-                              onChanged: (time) {},
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Ngày kết thúc:"),
-                            DatePicker(
-                              selected: DateTime.now(),
-                              onChanged: (time) {},
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Giờ chạy"),
-                            TimePicker(
-                              selected: DateTime.now(),
-                              onChanged: (time) {},
-                              hourFormat: HourFormat.HH,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    actions: <Widget>[
-                      Button(
-                        child: Text('Hủy'),
-                        onPressed: () {
-                          Navigator.pop(dialogContext);
-                        },
-                      ),
-                      FilledButton(
-                        child: Text('Cài'),
-                        onPressed: () {
-                          Navigator.pop(dialogContext);
-                        },
-                      ),
-                    ],
-                  );
+                  return ScheduleForm(dialogContext: dialogContext);
                 },
               );
+              if (schedule == null) return;
+              provider.setSchedule(robot, schedule);
             },
           ),
         ],

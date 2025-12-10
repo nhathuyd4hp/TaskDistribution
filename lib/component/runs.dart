@@ -64,7 +64,7 @@ class _RunsManagementState extends State<RunsManagement> {
         ),
       ),
       content: Padding(
-        padding: const EdgeInsets.all(25),
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 25),
         child: table(context, runProvider),
       ),
     );
