@@ -99,7 +99,7 @@ class _RobotManagementState extends State<RobotManagement> {
             child: Text("Cài lịch chạy"),
             onPressed: () async {
               final provider = context.read<ScheduleProvider>();
-              final Map<String, dynamic>? schedule = await showDialog(
+              final Map<String, String>? schedule = await showDialog(
                 context: context,
                 builder: (BuildContext dialogContext) {
                   return ScheduleForm(dialogContext: dialogContext);

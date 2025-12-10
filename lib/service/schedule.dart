@@ -47,7 +47,7 @@ class ScheduleClient {
         body: jsonEncode({"name": robot.name, "schedule": schedule}),
       );
       if (response.statusCode != 201) {
-        return (false, "Thất bại");
+        return (false, response.body);
       }
       return (true, "Thành công");
     } catch (e) {

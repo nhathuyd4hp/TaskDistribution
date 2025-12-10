@@ -15,22 +15,14 @@ class _ScheduleFormState extends State<ScheduleForm> {
   DateTime runTime = DateTime.now();
 
   List<bool> dayOfWeek = [true, true, true, true, true, true, true];
-  List<String> labelDayOfWeek = [
-    "mon",
-    "tue",
-    "wed",
-    "thu",
-    "fri",
-    "sat",
-    "sun",
-  ];
-
+  List<String> labelDayOfWeek = ["2", "3", "4", "5", "6", "7", "CN"];
+  List<String> keyDayOfWeek = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
   //
 
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      constraints: BoxConstraints(maxWidth: 425, maxHeight: 550),
+      constraints: BoxConstraints(maxWidth: 338.5, maxHeight: 550),
       title: Text('Lịch chạy'),
       content: Column(
         spacing: 10,
@@ -112,15 +104,17 @@ class _ScheduleFormState extends State<ScheduleForm> {
               "hour": runTime.hour,
               "minute": runTime.minute,
               "day_of_week": [
-                [
-                  for (int i = 0; i < dayOfWeek.length; i++)
-                    if (dayOfWeek[i]) labelDayOfWeek[i],
-                ].join(','),
-              ],
+                for (int i = 0; i < dayOfWeek.length; i++)
+                  if (dayOfWeek[i]) keyDayOfWeek[i],
+              ].join(','),
+
               "start_date": startDate.toString(),
               "end_date": endDate.toString(),
             };
-            Navigator.pop(widget.dialogContext, result);
+            final Map<String, String> schedule = result.map((key, value) {
+              return MapEntry(key, value.toString());
+            });
+            Navigator.pop(widget.dialogContext, schedule);
           },
         ),
       ],

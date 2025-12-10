@@ -45,7 +45,7 @@ class ScheduleProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> setSchedule(Robot robot, Map<String, dynamic> schedule) async {
+  Future<void> setSchedule(Robot robot, Map<String, String> schedule) async {
     final (success, message) = await repository.setSchedule(robot, schedule);
     if (success) {
       server.notification(message);
