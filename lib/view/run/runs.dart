@@ -1,5 +1,4 @@
 import "package:fluent_ui/fluent_ui.dart";
-import "package:flutter/foundation.dart";
 import "package:provider/provider.dart";
 import "package:task_distribution/core/widget/text_box.dart";
 import "package:task_distribution/model/run.dart";
