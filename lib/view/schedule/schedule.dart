@@ -100,21 +100,12 @@ class _ScheduleManagementState extends State<ScheduleManagement> {
                   border: Border.all(
                     color: theme.resources.dividerStrokeColorDefault,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
                 ),
                 child: Column(
                   children: [
                     // Header của bảng
                     _buildTableHeader(theme),
                     const Divider(),
-
-                    // Nội dung bảng
                     Expanded(
                       child: filtered.isEmpty
                           ? EmptyState()
@@ -199,7 +190,7 @@ class _ScheduleManagementState extends State<ScheduleManagement> {
     // Format thời gian chạy kế tiếp
     final nextRun = schedule.nextRunTime != null
         ? schedule.nextRunTime.toString().split('.')[0]
-        : "--";
+        : "";
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -220,7 +211,8 @@ class _ScheduleManagementState extends State<ScheduleManagement> {
               nextRun,
               style: TextStyle(
                 fontFamily: 'Consolas',
-                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
                 color: theme.resources.textFillColorSecondary,
               ),
             ),
@@ -229,12 +221,9 @@ class _ScheduleManagementState extends State<ScheduleManagement> {
             flex: 1,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Tooltip(
-                message: "Xóa lịch trình",
-                child: IconButton(
-                  icon: const Icon(FluentIcons.delete),
-                  onPressed: () => _handleDelete(context, schedule),
-                ),
+              child: IconButton(
+                icon: const Icon(FluentIcons.delete, color: Color(0xffef314c)),
+                onPressed: () => _handleDelete(context, schedule),
               ),
             ),
           ),

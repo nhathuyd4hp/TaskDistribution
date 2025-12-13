@@ -27,9 +27,9 @@ class ScheduleClient {
       final url = Uri.parse("$backend/api/schedule/${schedule.id}");
       final response = await http.delete(url);
       if (response.statusCode != 200) {
-        return (false, "Thất bại");
+        return (false, response.body);
       }
-      return (true, "Thành công");
+      return (true, "Success");
     } catch (e) {
       return (false, e.toString());
     }
@@ -49,7 +49,7 @@ class ScheduleClient {
       if (response.statusCode != 201) {
         return (false, response.body);
       }
-      return (true, "Thành công");
+      return (true, "Success");
     } catch (e) {
       return (false, e.toString());
     }

@@ -23,7 +23,7 @@ class Schedule {
       name: json['name'] as String,
       parameters: json['parameters'] as dynamic,
       nextRunTime: json['next_run_time'] != null
-          ? DateTime.parse(json['next_run_time'])
+          ? DateTime.parse(json['next_run_time']).toLocal()
           : null,
       startDate: json['start_date'] != null
           ? DateTime.parse(json['start_date'])

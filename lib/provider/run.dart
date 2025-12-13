@@ -50,7 +50,6 @@ class RunProvider extends ChangeNotifier {
       lockParentWindow: true,
     );
     if (directoryPath == null) {
-      server.warning("Vui lòng chọn thư mục lưu file.");
       return;
     }
     final (success, message) = await repository.getResult(

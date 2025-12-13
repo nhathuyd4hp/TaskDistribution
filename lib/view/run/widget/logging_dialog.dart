@@ -16,10 +16,7 @@ class LoggingDialog extends StatelessWidget {
     return ContentDialog(
       constraints: BoxConstraints(maxHeight: 700),
       title: Text('Log'),
-      content: Table(children: [
-
-        ],
-      ),
+      content: Table(children: []),
       actions: <Widget>[
         Button(
           child: Text('Cancel'),

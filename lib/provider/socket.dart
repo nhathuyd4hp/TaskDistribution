@@ -79,8 +79,8 @@ class ServerProvider extends ChangeNotifier {
 
   Future<void> _reconnect(String url) async {
     _currentStatus = ConnectionStatus.disconnected;
-    notifyListeners(); // Thông báo đã mất kết nối
-    await Future.delayed(Duration(seconds: 5)); // Kết nối lại sau 5s
+    notifyListeners();
+    await Future.delayed(Duration(seconds: 5));
     await _connect(url);
   }
 

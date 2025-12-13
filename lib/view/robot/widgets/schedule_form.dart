@@ -13,7 +13,7 @@ class _ScheduleFormState extends State<ScheduleForm> {
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now();
   DateTime runTime = DateTime.now();
-
+  bool parametersInput = false;
   List<bool> dayOfWeek = [true, true, true, true, true, true, true];
   List<String> labelDayOfWeek = ["2", "3", "4", "5", "6", "7", "CN"];
   List<String> keyDayOfWeek = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
@@ -22,72 +22,65 @@ class _ScheduleFormState extends State<ScheduleForm> {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      constraints: BoxConstraints(maxWidth: 338.5, maxHeight: 450),
-      title: Text('Setup Schedule'),
+      constraints: BoxConstraints(maxWidth: 340, maxHeight: 500),
+      title: Text('Schedule Configuration'),
       content: Column(
+        spacing: 25,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: DatePicker(
-              header: "From",
-              headerStyle: TextStyle(fontWeight: FontWeight.w500),
-              selected: startDate,
-              onChanged: (time) {
-                setState(() {
-                  startDate = time;
-                });
-              },
-            ),
+          DatePicker(
+            header: "From",
+            headerStyle: TextStyle(fontWeight: FontWeight.w500),
+            selected: startDate,
+            onChanged: (time) {
+              setState(() {
+                startDate = time;
+              });
+            },
           ),
-          Expanded(
-            child: DatePicker(
-              header: "To",
-              headerStyle: TextStyle(fontWeight: FontWeight.w500),
-              selected: endDate,
-              onChanged: (time) {
-                setState(() {
-                  endDate = time;
-                });
-              },
-            ),
+          DatePicker(
+            header: "To",
+            headerStyle: TextStyle(fontWeight: FontWeight.w500),
+            selected: endDate,
+            onChanged: (time) {
+              setState(() {
+                endDate = time;
+              });
+            },
           ),
-          Expanded(
-            child: TimePicker(
-              header: "Run at",
-              headerStyle: TextStyle(fontWeight: FontWeight.w500),
-              selected: DateTime.now(),
-              onChanged: (time) {
-                runTime = time;
-              },
-              hourFormat: HourFormat.HH,
-            ),
+          TimePicker(
+            header: "Run at",
+            headerStyle: TextStyle(fontWeight: FontWeight.w500),
+            selected: DateTime.now(),
+            onChanged: (time) {
+              runTime = time;
+            },
+            hourFormat: HourFormat.HH,
           ),
-          Expanded(
-            child: Column(
-              spacing: 5,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Day of week",
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-                Row(
-                  spacing: 11,
-                  children: List.generate(dayOfWeek.length, (i) {
-                    return ToggleButton(
-                      checked: dayOfWeek[i],
-                      onChanged: (v) {
-                        setState(() {
-                          dayOfWeek[i] = v;
-                        });
-                      },
-                      child: Text(labelDayOfWeek[i]),
-                    );
-                  }),
-                ),
-              ],
-            ),
+          Column(
+            spacing: 5,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Day of week",
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+              Row(
+                spacing: 11,
+                children: List.generate(dayOfWeek.length, (i) {
+                  return ToggleButton(
+                    checked: dayOfWeek[i],
+                    onChanged: (v) {
+                      setState(() {
+                        dayOfWeek[i] = v;
+                      });
+                    },
+                    child: Text(labelDayOfWeek[i]),
+                  );
+                }),
+              ),
+            ],
           ),
         ],
       ),

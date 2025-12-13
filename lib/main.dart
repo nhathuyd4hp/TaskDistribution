@@ -38,7 +38,7 @@ class TaskDistribution extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PageProvider()),
         ChangeNotifierProvider(
           lazy: false,
-          create: (_) => ServerProvider("ws://127.0.0.1:8000/channel/celery"),
+          create: (_) => ServerProvider("ws://127.0.0.1:8000/ws"),
         ),
         ChangeNotifierProxyProvider<ServerProvider, RobotProvider>(
           create: (BuildContext context) => RobotProvider(

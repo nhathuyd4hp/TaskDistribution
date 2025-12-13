@@ -26,7 +26,7 @@ class Home extends StatelessWidget {
               context,
               builder: (context, close) {
                 return InfoBar(
-                  title: Text('Lỗi:'),
+                  title: Text('Error'),
                   content: Text(message),
                   severity: InfoBarSeverity.warning,
                 );
@@ -42,7 +42,7 @@ class Home extends StatelessWidget {
               context,
               builder: (context, close) {
                 return InfoBar(
-                  title: Text('Thông báo: '),
+                  title: Text('Info'),
                   content: Text(message),
                   severity: InfoBarSeverity.info,
                 );

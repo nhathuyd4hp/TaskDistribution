@@ -36,7 +36,7 @@ class _RunFormState extends State<RunForm> {
 
   Widget _buildForm() {
     if (widget.robot.parameters.isEmpty) {
-      return Text("Không có tham số đầu vào");
+      return Container();
     }
     return Column(
       spacing: 25,
@@ -81,7 +81,7 @@ class _RunFormState extends State<RunForm> {
         maxWidth: 500,
         maxHeight: 225 + (robot.parameters.length * 25),
       ),
-      title: Text('Input'),
+      title: Text('Parameter Input'),
       content: _buildForm(),
       actions: <Widget>[
         Button(
