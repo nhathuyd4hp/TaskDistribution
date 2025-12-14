@@ -38,15 +38,15 @@ class RunProvider extends ChangeNotifier {
 
   Future<void> download(Run run) async {
     if (run.status != "SUCCESS") {
-      server.warning(run.result ?? "Quá trình chạy lỗi");
+      server.warning(run.result ?? "Run failed");
       return;
     }
     if (run.result == null) {
-      server.warning("Không tìm thấy file kết quả");
+      server.warning("No result found");
       return;
     }
     final String? directoryPath = await FilePicker.platform.getDirectoryPath(
-      dialogTitle: "Lưu kết quả ${run.robot}",
+      dialogTitle: "Save file",
       lockParentWindow: true,
     );
     if (directoryPath == null) {

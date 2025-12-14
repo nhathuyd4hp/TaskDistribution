@@ -1,5 +1,6 @@
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:task_distribution/core/widget/text_box.dart';
 import 'package:task_distribution/model/robot.dart';
 
 class RunForm extends StatefulWidget {
@@ -15,7 +16,7 @@ class _RunFormState extends State<RunForm> {
   final Map<String, dynamic> _controllers = {};
 
   Widget _buildInput(Parameter parameter) {
-    if (parameter.name.toLowerCase().contains("date")) {
+    if (parameter.annotation.toLowerCase().contains("datetime")) {
       return DatePicker(
         selected: _controllers[parameter.name] ?? DateTime.now(),
         onChanged: (value) {
@@ -25,7 +26,76 @@ class _RunFormState extends State<RunForm> {
         },
       );
     }
-    return WinTextBox(
+    if (parameter.annotation.toLowerCase().contains("literal")) {
+      final content = parameter.annotation.substring(
+        parameter.annotation.indexOf('[') + 1,
+        parameter.annotation.lastIndexOf(']'),
+      );
+      final List<dynamic> items = content.split(',').map((e) {
+        // Xóa khoảng trắng và dấu nháy
+        String clean = e.trim().replaceAll("'", "").replaceAll('"', "");
+        // Thử parse sang int, nếu null thì giữ nguyên là String
+        return int.tryParse(clean) ?? clean;
+      }).toList();
+
+      return ComboBox<dynamic>(
+        value: _controllers[parameter.name],
+        items: items.map<ComboBoxItem<dynamic>>((e) {
+          return ComboBoxItem<dynamic>(value: e, child: Text(e.toString()));
+        }).toList(),
+        onChanged: (value) {
+          setState(() {
+            _controllers[parameter.name] = value;
+          });
+        },
+        placeholder: Text(parameter.name),
+      );
+    }
+    if (parameter.annotation.toLowerCase().contains("int")) {
+      return NumberBox(
+        placeholder: parameter.name,
+        value: _controllers[parameter.name],
+        onChanged: (value) {
+          setState(() {
+            _controllers[parameter.name] = value;
+          });
+        },
+        mode: SpinButtonPlacementMode.inline,
+      );
+    }
+    if (parameter.annotation.toLowerCase().contains("bytes")) {
+      String displayText = _controllers[parameter.name] != null
+          ? "File Selected (Ready)"
+          : "Choose file";
+      return FilledButton(
+        onPressed: () async {
+          FilePickerResult? result = await FilePicker.platform.pickFiles(
+            dialogTitle: "Select File",
+            lockParentWindow: true,
+            allowMultiple: false,
+          );
+          if (result == null) return;
+          String path = result.files.single.path!;
+          var fileBytes = await File(path).readAsBytes();
+          setState(() {
+            _controllers[parameter.name] = fileBytes;
+          });
+        },
+        child: Text(displayText),
+      );
+    }
+    return TextBox(
+      placeholder: parameter.name,
+      placeholderStyle: TextStyle(fontWeight: FontWeight.w500),
+      style: TextStyle(fontWeight: FontWeight.w500),
+      decoration: WidgetStatePropertyAll(
+        BoxDecoration(
+          border: Border.all(color: Colors.transparent),
+          borderRadius: BorderRadius.circular(0),
+        ),
+      ),
+      unfocusedColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       onChanged: (value) {
         setState(() {
           _controllers[parameter.name] = value;
@@ -43,7 +113,7 @@ class _RunFormState extends State<RunForm> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: widget.robot.parameters.map<Widget>((param) {
         return Row(
-          spacing: 25,
+          spacing: 0,
           children: [
             Expanded(
               flex: 1,
@@ -52,7 +122,7 @@ class _RunFormState extends State<RunForm> {
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
             ),
-            Expanded(flex: 2, child: _buildInput(param)),
+            Expanded(flex: 3, child: _buildInput(param)),
           ],
         );
       }).toList(),
@@ -64,9 +134,13 @@ class _RunFormState extends State<RunForm> {
     super.initState();
     for (var p in widget.robot.parameters) {
       var defaultValue = p.defaultValue;
-      if (p.annotation.toLowerCase().contains('date')) {
+      if (p.annotation.toLowerCase().contains('datetime')) {
         _controllers[p.name] =
             DateTime.tryParse(defaultValue ?? "") ?? DateTime.now();
+      } else if (p.annotation.toLowerCase().contains('int')) {
+        _controllers[p.name] = defaultValue;
+      } else if (p.annotation.toLowerCase().contains('bytes')) {
+        _controllers[p.name] = defaultValue;
       } else {
         _controllers[p.name] = defaultValue ?? "";
       }
@@ -78,8 +152,8 @@ class _RunFormState extends State<RunForm> {
     final Robot robot = widget.robot;
     return ContentDialog(
       constraints: BoxConstraints(
-        maxWidth: 500,
-        maxHeight: 225 + (robot.parameters.length * 25),
+        maxWidth: 550,
+        maxHeight: 200 + (robot.parameters.length * 50),
       ),
       title: Text('Parameter Input'),
       content: _buildForm(),
