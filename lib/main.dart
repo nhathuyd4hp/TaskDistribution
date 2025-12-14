@@ -74,6 +74,13 @@ class TaskDistribution extends StatelessWidget {
       child: FluentApp(
         title: "Task Distribution",
         debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.system,
+        theme: FluentThemeData(brightness: Brightness.light),
+        darkTheme: FluentThemeData(
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: Color(0xff111823),
+          cardColor: Color(0xff19222c),
+        ),
         home: Home(),
       ),
     );

@@ -25,7 +25,6 @@ class Header extends StatelessWidget {
       ),
       child: Row(
         spacing: 50,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text("Robot Automation", style: theme.typography.title),
           Row(
@@ -67,7 +66,7 @@ class Header extends StatelessWidget {
       child: Row(
         spacing: 10,
         children: [
-          Icon(icon, size: 16, color: Colors.white),
+          Icon(icon, size: 16),
           Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
         ],
       ),

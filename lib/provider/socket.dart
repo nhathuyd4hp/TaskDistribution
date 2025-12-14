@@ -62,7 +62,6 @@ class ServerProvider extends ChangeNotifier {
           }
         },
         onDone: () {
-          _errorMessage = "Mất kết nối đến server";
           _reconnect(url);
         },
         onError: (error) {

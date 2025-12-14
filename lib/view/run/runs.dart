@@ -177,10 +177,11 @@ class _RunsManagementState extends State<RunsManagement> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Expanded(flex: 3, child: Text("ROBOT NAME", style: headerStyle)),
-          Expanded(flex: 2, child: Text("STATUS", style: headerStyle)),
+          Expanded(flex: 3, child: Text("ID", style: headerStyle)),
+          Expanded(flex: 2, child: Text("ROBOT NAME", style: headerStyle)),
+          Expanded(flex: 1, child: Text("STATUS", style: headerStyle)),
           Expanded(
-            flex: 3,
+            flex: 2,
             child: Row(
               spacing: 5,
               children: [
@@ -200,7 +201,7 @@ class _RunsManagementState extends State<RunsManagement> {
               ],
             ),
           ),
-          Expanded(flex: 2, child: Text("ACTIONS", style: headerStyle)),
+          Expanded(flex: 1, child: Text("ACTIONS", style: headerStyle)),
         ],
       ),
     );
@@ -220,13 +221,20 @@ class _RunsManagementState extends State<RunsManagement> {
           Expanded(
             flex: 3,
             child: Text(
+              run.id,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
               robotName,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-          Expanded(flex: 2, child: _buildStatusBadge(run)),
+          Expanded(flex: 1, child: _buildStatusBadge(run)),
           Expanded(
-            flex: 3,
+            flex: 2,
             child: Text(
               timeString,
               style: TextStyle(
@@ -238,7 +246,7 @@ class _RunsManagementState extends State<RunsManagement> {
             ),
           ),
           Expanded(
-            flex: 2,
+            flex: 1,
             child: Row(
               children: [
                 Tooltip(
@@ -265,6 +273,7 @@ class _RunsManagementState extends State<RunsManagement> {
                   child: IconButton(
                     icon: const Icon(
                       FluentIcons.compliance_audit,
+                      color: Color(0xFF2E7D32),
                       size: 18,
                     ), // Icon giống log file
                     onPressed: () {
