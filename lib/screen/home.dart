@@ -22,6 +22,11 @@ class Home extends StatelessWidget {
       builder: (context, server, child) {
         if (server.errorMessage != null) {
           final message = server.errorMessage!;
+          LocalNotification(
+            identifier: DateTime.now().toString(),
+            title: "Thông báo",
+            body: message,
+          ).show();
           WidgetsBinding.instance.addPostFrameCallback((_) {
             displayInfoBar(
               context,
@@ -42,7 +47,7 @@ class Home extends StatelessWidget {
             identifier: DateTime.now().toString(),
             title: "Thông báo",
             body: message,
-          );
+          ).show();
           WidgetsBinding.instance.addPostFrameCallback((_) {
             displayInfoBar(
               context,
