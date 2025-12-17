@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:local_notifier/local_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:task_distribution/provider/run.dart';
 import 'package:task_distribution/provider/schedule.dart';
@@ -14,7 +15,6 @@ import "screen/home.dart";
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
-
   WindowOptions windowOptions = const WindowOptions(
     minimumSize: Size(1000, 700),
     size: Size(1000, 700),
@@ -24,6 +24,11 @@ void main() async {
     await windowManager.show();
     await windowManager.focus();
   });
+  //
+  await localNotifier.setup(
+    appName: 'Robot Automation',
+    shortcutPolicy: ShortcutPolicy.requireCreate,
+  );
   // Run
   runApp(const TaskDistribution());
 }

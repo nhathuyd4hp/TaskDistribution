@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import "package:local_notifier/local_notifier.dart";
 import 'package:provider/provider.dart';
 import 'package:task_distribution/core/widget/header.dart';
 import "package:task_distribution/provider/socket.dart";
@@ -28,7 +29,7 @@ class Home extends StatelessWidget {
                 return InfoBar(
                   title: Text('Error'),
                   content: Text(message),
-                  severity: InfoBarSeverity.warning,
+                  severity: InfoBarSeverity.error,
                 );
               },
             );
@@ -37,6 +38,11 @@ class Home extends StatelessWidget {
         }
         if (server.latestMessage != null) {
           final message = server.latestMessage!;
+          LocalNotification(
+            identifier: DateTime.now().toString(),
+            title: "Thông báo",
+            body: message,
+          );
           WidgetsBinding.instance.addPostFrameCallback((_) {
             displayInfoBar(
               context,
