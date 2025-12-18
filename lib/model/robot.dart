@@ -1,8 +1,13 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:task_distribution/main.dart';
+
 class Parameter {
   final String name;
   final dynamic defaultValue;
   final bool required;
-  final String annotation;
+  String annotation;
 
   Parameter({
     required this.name,
@@ -18,6 +23,10 @@ class Parameter {
       required: json['required'] as bool,
       annotation: json['annotation'] as String,
     );
+  }
+
+  void setAnnotation(String annotation) {
+    this.annotation = annotation;
   }
 }
 
@@ -36,5 +45,32 @@ class Robot {
           .map((e) => Parameter.fromJson(e))
           .toList(),
     );
+  }
+
+  Future<Robot> reGenerate() async {
+    bool hasAPI = parameters.any(
+      (param) => param.annotation.toLowerCase().contains("type.api"),
+    );
+    if (!hasAPI) return this;
+
+    for (int i = 0; i < parameters.length; i++) {
+      Parameter parameter = parameters[i];
+      if (!parameter.annotation.toLowerCase().contains("type.api")) continue;
+      if (parameter.defaultValue == null) {
+        throw Exception(
+          "Cannot build form: parameter '${parameter.name}' does not have a default value.",
+        );
+      }
+      final url = Uri.parse(
+        "${TaskDistribution.backendUrl}${parameter.defaultValue}",
+      );
+      final response = await http.get(url);
+      if (response.statusCode != 200) {
+        throw Exception("Cannot build form: ${response.body}");
+      }
+      final responseJson = jsonDecode(response.body);
+      parameter.setAnnotation(responseJson['data']!);
+    }
+    return this;
   }
 }

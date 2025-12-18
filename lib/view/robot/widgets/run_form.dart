@@ -114,14 +114,14 @@ class _RunFormState extends State<RunForm> {
     );
   }
 
-  Widget _buildForm() {
-    if (widget.robot.parameters.isEmpty) {
+  Widget _buildForm(Robot robot) {
+    if (robot.parameters.isEmpty) {
       return Container();
     }
     return Column(
       spacing: 25,
       mainAxisAlignment: MainAxisAlignment.center,
-      children: widget.robot.parameters.map<Widget>((param) {
+      children: robot.parameters.map<Widget>((param) {
         return Row(
           spacing: 0,
           children: [
@@ -170,7 +170,19 @@ class _RunFormState extends State<RunForm> {
         maxHeight: 200 + (robot.parameters.length * 50),
       ),
       title: Text('Parameter Input'),
-      content: _buildForm(),
+      content: FutureBuilder<Robot>(
+        future: robot.reGenerate(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: ProgressBar());
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            return _buildForm(snapshot.data!);
+          }
+          return Text('ERROR');
+        },
+      ),
       actions: <Widget>[
         Button(
           child: Text('Cancel'),
