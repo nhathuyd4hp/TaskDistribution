@@ -98,7 +98,8 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
         child: Column(
           spacing: 16,
           children: [
-            if (selectedRunId != null) _buildRunInfoPanel(theme, currentRun!),
+            if (selectedRunId != null && currentRun != null)
+              _buildRunInfoPanel(theme, currentRun),
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -241,8 +242,8 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
             child: FilledButton(
               child: const Text("Result"),
               onPressed: () {
-                final provider = context.read<RunProvider>();
                 if (run != null) {
+                  final provider = context.read<RunProvider>();
                   provider.download(run);
                 }
               },
