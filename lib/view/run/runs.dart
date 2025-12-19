@@ -179,11 +179,11 @@ class _RunsPageState extends State<RunsPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Expanded(flex: 3, child: Text("ID", style: headerStyle)),
-          Expanded(flex: 2, child: Text("ROBOT NAME", style: headerStyle)),
-          Expanded(flex: 1, child: Text("STATUS", style: headerStyle)),
-          Expanded(
-            flex: 2,
+          SizedBox(width: 300, child: Text("ID", style: headerStyle)),
+          Expanded(child: Text("ROBOT NAME", style: headerStyle)),
+          SizedBox(width: 150, child: Text("STATUS", style: headerStyle)),
+          SizedBox(
+            width: 250,
             child: Row(
               spacing: 5,
               children: [
@@ -203,7 +203,7 @@ class _RunsPageState extends State<RunsPage> {
               ],
             ),
           ),
-          Expanded(flex: 1, child: Text("ACTIONS", style: headerStyle)),
+          SizedBox(width: 100, child: Text("ACTIONS", style: headerStyle)),
         ],
       ),
     );
@@ -211,40 +211,37 @@ class _RunsPageState extends State<RunsPage> {
 
   Widget _buildTableRow(BuildContext context, Run run, FluentThemeData theme) {
     final robotName = run.robot;
-    final timeString = run.createdAt.toString().split('.')[0];
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Expanded(
-            flex: 3,
+          SizedBox(
+            width: 300,
             child: SelectableText(
               run.id,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
           Expanded(
-            flex: 2,
             child: Text(
               robotName,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-          Expanded(flex: 1, child: StatusBadge(run: run)),
-          Expanded(
-            flex: 2,
+          SizedBox(width: 150, child: StatusBadge(run: run)),
+          SizedBox(
+            width: 250,
             child: Text(
-              timeString,
+              run.createdAt.toString().split('.')[0],
               style: TextStyle(
-                fontFamily: 'Consolas',
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
                 color: theme.resources.textFillColorSecondary,
               ),
             ),
           ),
-          Expanded(
-            flex: 1,
+          SizedBox(
+            width: 100,
             child: IconButton(
               icon: Icon(FluentIcons.info, color: theme.accentColor, size: 18),
               onPressed: () async {

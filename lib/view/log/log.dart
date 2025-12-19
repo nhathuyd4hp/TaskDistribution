@@ -117,7 +117,7 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
                 ),
                 child: Column(
                   children: [
-                    _buildLogTableHeader(theme),
+                    _buildLogTableHeader(theme, currentRun),
                     const Divider(),
                     Expanded(
                       child: ListView.separated(
@@ -223,7 +223,7 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
     );
   }
 
-  Widget _buildLogTableHeader(FluentThemeData theme) {
+  Widget _buildLogTableHeader(FluentThemeData theme, Run? run) {
     final style = TextStyle(
       fontSize: 12,
       fontWeight: FontWeight.bold,
@@ -238,7 +238,15 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
           Expanded(child: Text("MESSAGE", style: style)),
           SizedBox(
             width: 100,
-            child: FilledButton(child: const Text("Result"), onPressed: () {}),
+            child: FilledButton(
+              child: const Text("Result"),
+              onPressed: () {
+                final provider = context.read<RunProvider>();
+                if (run != null) {
+                  provider.download(run);
+                }
+              },
+            ),
           ),
         ],
       ),
