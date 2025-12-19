@@ -35,14 +35,15 @@ class InformationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ContentDialog(
-      constraints: BoxConstraints(),
+      constraints: BoxConstraints(maxWidth: 550),
       title: Text('Run Details'),
       content: Table(
         children: [
-          _buildTableRow('ROBOT NAME:', run.robot),
-          _buildTableRow('STATUS:', run.status),
-          _buildTableRow('PARAMETER:', run.parameters ?? ""),
-          _buildTableRow('RUN AT:', run.createdAt.toIso8601String()),
+          _buildTableRow('Robot:', run.robot),
+          _buildTableRow('Status:', run.status),
+          _buildTableRow('Parameter:', run.parameters ?? ""),
+          _buildTableRow('Run at:', run.createdAt.toIso8601String()),
+          _buildTableRow('Result:', run.result ?? ""),
         ],
       ),
       actions: <Widget>[

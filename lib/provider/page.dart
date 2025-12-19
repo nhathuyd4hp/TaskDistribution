@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-enum AppPage { robot, runs, schedule }
+enum AppPage { robot, runs, schedule, log }
 
 class PageProvider extends ChangeNotifier {
   AppPage currentPage = AppPage.robot;

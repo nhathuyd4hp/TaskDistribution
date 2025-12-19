@@ -7,14 +7,14 @@ import "package:task_distribution/model/robot.dart";
 import "package:task_distribution/provider/robot.dart";
 import "package:task_distribution/provider/schedule.dart";
 
-class RobotManagement extends StatefulWidget {
-  const RobotManagement({super.key});
+class RobotPage extends StatefulWidget {
+  const RobotPage({super.key});
 
   @override
-  State<RobotManagement> createState() => _RobotManagementState();
+  State<RobotPage> createState() => _RobotPageState();
 }
 
-class _RobotManagementState extends State<RobotManagement> {
+class _RobotPageState extends State<RobotPage> {
   String nameContains = "";
 
   @override
@@ -24,8 +24,7 @@ class _RobotManagementState extends State<RobotManagement> {
 
     final filtered = robotProvider.robots.where((robot) {
       if (nameContains.isEmpty) return true;
-      final displayName = robot.name.replaceAll("_", " ").split(".").last;
-      return displayName.toLowerCase().contains(nameContains.toLowerCase()) ||
+      return robot.name.contains(nameContains.toLowerCase()) ||
           robot.name.toLowerCase().contains(nameContains.toLowerCase());
     }).toList();
 
@@ -143,12 +142,6 @@ class _RobotManagementState extends State<RobotManagement> {
     Robot robot,
     FluentThemeData theme,
   ) {
-    final displayName = robot.name
-        .replaceAll("_", " ")
-        .split(".")
-        .last
-        .toUpperCase();
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -159,7 +152,7 @@ class _RobotManagementState extends State<RobotManagement> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  displayName,
+                  robot.name,
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ],

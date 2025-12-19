@@ -4,14 +4,14 @@ import "package:task_distribution/core/widget/empty_state.dart";
 import "package:task_distribution/model/schedule.dart";
 import "package:task_distribution/provider/schedule.dart";
 
-class ScheduleManagement extends StatefulWidget {
-  const ScheduleManagement({super.key});
+class SchedulePage extends StatefulWidget {
+  const SchedulePage({super.key});
 
   @override
-  State<ScheduleManagement> createState() => _ScheduleManagementState();
+  State<SchedulePage> createState() => _SchedulePageState();
 }
 
-class _ScheduleManagementState extends State<ScheduleManagement> {
+class _SchedulePageState extends State<SchedulePage> {
   String nameContains = "";
   String statusFilter = "--";
 
@@ -176,12 +176,6 @@ class _ScheduleManagementState extends State<ScheduleManagement> {
     Schedule schedule,
     FluentThemeData theme,
   ) {
-    final displayName = schedule.name
-        .replaceAll("_", " ")
-        .split(".")
-        .last
-        .toUpperCase();
-
     // Format thời gian chạy kế tiếp
     final nextRun = schedule.nextRunTime != null
         ? schedule.nextRunTime.toString().split('.')[0]
@@ -195,7 +189,7 @@ class _ScheduleManagementState extends State<ScheduleManagement> {
           Expanded(
             flex: 3,
             child: Text(
-              displayName,
+              schedule.name,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),

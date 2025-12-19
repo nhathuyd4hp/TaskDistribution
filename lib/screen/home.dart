@@ -3,6 +3,7 @@ import "package:local_notifier/local_notifier.dart";
 import 'package:provider/provider.dart';
 import 'package:task_distribution/core/widget/header.dart';
 import "package:task_distribution/provider/socket.dart";
+import "package:task_distribution/view/log/log.dart";
 import "../provider/page.dart";
 import "../view/robot/robot.dart";
 import "../view/schedule/schedule.dart";
@@ -72,11 +73,13 @@ class Home extends StatelessWidget {
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints _) {
                 if (page.getPage() == AppPage.runs) {
-                  return RunsManagement();
+                  return RunsPage();
                 } else if (page.getPage() == AppPage.schedule) {
-                  return ScheduleManagement();
+                  return SchedulePage();
+                } else if (page.getPage() == AppPage.log) {
+                  return ExecutionLogPage();
                 } else {
-                  return RobotManagement();
+                  return RobotPage();
                 }
               },
             ),

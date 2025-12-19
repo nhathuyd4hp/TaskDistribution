@@ -79,7 +79,7 @@ class ServerProvider extends ChangeNotifier {
   Future<void> _reconnect(String url) async {
     _currentStatus = ConnectionStatus.disconnected;
     notifyListeners();
-    await Future.delayed(Duration(seconds: 30));
+    await Future.delayed(Duration(seconds: 15));
     await _connect(url);
   }
 
