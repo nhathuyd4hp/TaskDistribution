@@ -1,7 +1,7 @@
 import "package:fluent_ui/fluent_ui.dart";
 import "package:provider/provider.dart";
 import "package:task_distribution/core/widget/empty_state.dart";
-import "package:task_distribution/core/widget/status_badge.dart";
+import "package:task_distribution/core/widget/run_status_badge.dart";
 import "package:task_distribution/view/run/widget/information_dialog.dart";
 import "package:task_distribution/model/run.dart";
 import "package:task_distribution/provider/run/run.dart";
@@ -228,7 +228,7 @@ class _RunsPageState extends State<RunsPage> {
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-          SizedBox(width: 150, child: StatusBadge(run: run)),
+          SizedBox(width: 150, child: RunStatusBadge(run: run)),
           SizedBox(
             width: 250,
             child: Text(

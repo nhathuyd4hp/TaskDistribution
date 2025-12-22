@@ -1,44 +1,29 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:task_distribution/model/run.dart';
+import 'package:task_distribution/provider/socket.dart';
 
-class StatusBadge extends StatelessWidget {
-  final Run run;
+class ServerStatusBadge extends StatelessWidget {
+  final ConnectionStatus status;
 
-  const StatusBadge({super.key, required this.run});
+  const ServerStatusBadge({super.key, required this.status});
 
   @override
   Widget build(BuildContext context) {
     Color bgColor;
     Color textColor;
-    IconData icon;
-    String text = run.status;
 
-    switch (run.status.toLowerCase()) {
-      case 'waiting':
+    switch (status) {
+      case ConnectionStatus.connecting:
         bgColor = const Color(0xFFFFF8E1);
         textColor = const Color(0xFFF9A825);
-        icon = FluentIcons.hour_glass;
         break;
-      case 'success':
+      case ConnectionStatus.connected:
         bgColor = const Color(0xFFE8F5E9);
         textColor = const Color(0xFF2E7D32);
-        icon = FluentIcons.check_mark;
         break;
-      case 'failure':
-      case 'error':
+      case ConnectionStatus.disconnected:
         bgColor = const Color(0xFFFFEBEE);
         textColor = const Color(0xFFC62828);
-        icon = FluentIcons.error;
         break;
-      case 'pending':
-        bgColor = const Color(0xFFE3F2FD);
-        textColor = const Color(0xFF1565C0);
-        icon = FluentIcons.clock;
-        break;
-      default:
-        bgColor = const Color(0xFFF5F5F5);
-        textColor = const Color(0xFF616161);
-        icon = FluentIcons.unknown;
     }
 
     return Align(
@@ -53,10 +38,10 @@ class StatusBadge extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 12, color: textColor),
+            WindowsIcon(FluentIcons.location_dot, size: 12, color: textColor),
             const SizedBox(width: 6),
             Text(
-              text,
+              status.name.toUpperCase(),
               style: TextStyle(
                 color: textColor,
                 fontSize: 12,

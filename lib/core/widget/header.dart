@@ -1,6 +1,8 @@
 import "package:fluent_ui/fluent_ui.dart";
 import "package:provider/provider.dart";
+import "package:task_distribution/core/widget/server_status_badge.dart";
 import 'package:task_distribution/provider/page.dart';
+import "package:task_distribution/provider/socket.dart";
 
 class Header extends StatelessWidget {
   final EdgeInsets padding;
@@ -9,6 +11,10 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pageState = context.watch<PageProvider>();
+    final connectionStatus = context.select<ServerProvider, ConnectionStatus>(
+      (provider) => provider.status,
+    );
+    //
     final theme = FluentTheme.of(context);
 
     return Container(
@@ -60,6 +66,8 @@ class Header extends StatelessWidget {
               ),
             ],
           ),
+          Spacer(),
+          ServerStatusBadge(status: connectionStatus),
         ],
       ),
     );

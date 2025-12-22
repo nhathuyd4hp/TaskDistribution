@@ -4,7 +4,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:task_distribution/core/widget/log_badge.dart';
-import 'package:task_distribution/core/widget/status_badge.dart';
+import 'package:task_distribution/core/widget/run_status_badge.dart';
 import 'package:task_distribution/main.dart';
 import 'package:task_distribution/model/log.dart';
 import 'package:task_distribution/model/run.dart';
@@ -177,7 +177,7 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              StatusBadge(run: run),
+              RunStatusBadge(run: run),
             ],
           ),
           const Divider(),
