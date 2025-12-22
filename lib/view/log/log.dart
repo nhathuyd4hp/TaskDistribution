@@ -132,7 +132,6 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
                             ),
                           ),
                         ),
-                        reverse: true,
                         itemBuilder: (context, index) {
                           return _buildLogTableRow(logs[index], theme);
                         },
