@@ -50,9 +50,7 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
             if (mounted) {
               setState(() {
                 final logEntry = LogEntry.fromRawLine(line);
-                setState(() {
-                  logs.add(logEntry);
-                });
+                logs.add(logEntry);
               });
             }
           });

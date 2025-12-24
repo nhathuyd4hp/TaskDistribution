@@ -20,7 +20,11 @@ class LogEntry {
   }
 
   factory LogEntry.fromRawLine(String line) {
-    final Map<String, dynamic> json = jsonDecode(line);
-    return LogEntry.fromJson(json);
+    try {
+      final Map<String, dynamic> json = jsonDecode(line);
+      return LogEntry.fromJson(json);
+    } catch (e) {
+      return LogEntry(timestamp: DateTime.now(), level: "INFO", message: line);
+    }
   }
 }
