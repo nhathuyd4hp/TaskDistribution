@@ -1,3 +1,4 @@
+import "dart:math"; // Để dùng hàm min/max
 import "package:fluent_ui/fluent_ui.dart";
 import "package:provider/provider.dart";
 import "package:task_distribution/core/widget/empty_state.dart";
@@ -16,36 +17,38 @@ class RobotPage extends StatefulWidget {
 }
 
 class _RobotPageState extends State<RobotPage> {
-  // 1. Khởi tạo Controller trong State để nó không bị tạo lại mỗi lần rebuild
-  late TextEditingController _controller;
+  late TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
     final initialQuery = context.read<RobotFilterProvider>().nameQuery;
-    _controller = TextEditingController(text: initialQuery);
+    _searchController = TextEditingController(text: initialQuery);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = FluentTheme.of(context);
+
     // Search Box
     final searchBox = Selector<RobotFilterProvider, String>(
       selector: (_, provider) => provider.nameQuery,
       builder: (context, query, child) {
+        if (_searchController.text != query) {
+          _searchController.text = query;
+          _searchController.selection = TextSelection.fromPosition(
+            TextPosition(offset: _searchController.text.length),
+          );
+        }
         return TextBox(
           placeholder: 'Search...',
-          placeholderStyle: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-          controller: _controller,
+          controller: _searchController,
           prefix: const Padding(
             padding: EdgeInsets.only(left: 8.0),
             child: Icon(FluentIcons.search),
@@ -56,86 +59,164 @@ class _RobotPageState extends State<RobotPage> {
         );
       },
     );
-    // Data
-    final robot = Consumer2<RobotProvider, RobotFilterProvider>(
-      builder: (context, sourceProvider, filterProvider, child) {
-        final filtered = filterProvider.apply(sourceProvider.robots);
-        if (filtered.isEmpty) {
-          return EmptyState();
-        }
-        return ListView.separated(
-          itemCount: filtered.length,
-          separatorBuilder: (ctx, i) => const Divider(),
-          itemBuilder: (context, index) {
-            return _buildTableRow(context, filtered[index], theme);
-          },
-        );
-      },
-    );
-    // Layout
+
     return ScaffoldPage(
       header: PageHeader(
         padding: 0,
         title: const Text('Robot'),
-        commandBar: searchBox,
+        commandBar: SizedBox(width: 300, child: searchBox),
       ),
       content: Padding(
         padding: const EdgeInsets.all(0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: theme.resources.dividerStrokeColorDefault,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    _buildTableHeader(theme),
-                    const Divider(),
-                    Expanded(child: robot),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: theme.scaffoldBackgroundColor.withValues(
-                          alpha: 0.5,
-                        ),
-                        border: Border(
-                          top: BorderSide(
-                            color: theme.resources.dividerStrokeColorDefault,
-                          ),
-                        ),
-                        borderRadius: const BorderRadius.vertical(
-                          bottom: Radius.circular(8),
-                        ),
-                      ),
-                      child: Text("Count: 0", style: theme.typography.body),
-                    ),
-                  ],
-                ),
-              ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: theme.resources.dividerStrokeColorDefault,
             ),
-          ],
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+
+          // --- LOGIC CHÍNH ---
+          child: Consumer2<RobotProvider, RobotFilterProvider>(
+            builder: (context, robotProvider, filterProvider, child) {
+              // 1. Lọc dữ liệu gốc (Search/Filter) -> Ra danh sách đầy đủ
+              final fullFilteredList = filterProvider.apply(
+                robotProvider.robots,
+              );
+
+              // 2. Cắt trang (Pagination) -> Ra danh sách hiển thị
+              final paginatedList = filterProvider.paginate(fullFilteredList);
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTableHeader(theme),
+                  const Divider(),
+
+                  // Hiển thị danh sách đã cắt trang (paginatedList)
+                  Expanded(
+                    child: paginatedList.isEmpty
+                        ? const EmptyState()
+                        : ListView.separated(
+                            itemCount: paginatedList.length,
+                            separatorBuilder: (ctx, i) => const Divider(),
+                            itemBuilder: (context, index) {
+                              return _buildTableRow(
+                                context,
+                                paginatedList[index],
+                                theme,
+                              );
+                            },
+                          ),
+                  ),
+
+                  // Footer điều khiển phân trang
+                  _buildPaginationFooter(
+                    context,
+                    theme,
+                    filterProvider,
+                    fullFilteredList.length, // Truyền tổng số lượng bản ghi
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
+  // --- FOOTER PHÂN TRANG MỚI ---
+  Widget _buildPaginationFooter(
+    BuildContext context,
+    FluentThemeData theme,
+    RobotFilterProvider provider,
+    int totalItems,
+  ) {
+    // Tính tổng số trang
+    final totalPages = (totalItems / provider.itemsPerPage).ceil();
+    // Đảm bảo trang hiện tại không vượt quá tổng số trang (tránh lỗi UI khi xóa item)
+    final currentPage = totalPages > 0
+        ? min(provider.currentPage, totalPages)
+        : 1;
+
+    // Tính range đang hiển thị (Ví dụ: 1-10 of 50)
+    final startItem = totalItems == 0
+        ? 0
+        : (currentPage - 1) * provider.itemsPerPage + 1;
+    final endItem = min(currentPage * provider.itemsPerPage, totalItems);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor.withValues(alpha: 0.5),
+        border: Border(
+          top: BorderSide(color: theme.resources.dividerStrokeColorDefault),
+        ),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(8)),
+      ),
+      child: Row(
+        children: [
+          Text("Rows per page:", style: theme.typography.caption),
+          const SizedBox(width: 8),
+          ComboBox<int>(
+            value: provider.itemsPerPage,
+            items: const [
+              ComboBoxItem(value: 1, child: Text("1")),
+              ComboBoxItem(value: 5, child: Text("5")),
+              ComboBoxItem(value: 10, child: Text("10")),
+              ComboBoxItem(value: 15, child: Text("15")),
+              ComboBoxItem(value: 20, child: Text("20")),
+            ],
+            onChanged: (value) {
+              if (value != null) provider.setItemsPerPage(value);
+            },
+          ),
+          const Spacer(),
+          Text(
+            "$startItem-$endItem of $totalItems items",
+            style: theme.typography.caption,
+          ),
+          const SizedBox(width: 16),
+
+          // 3. Nút Previous
+          IconButton(
+            icon: const Icon(FluentIcons.chevron_left, size: 12),
+            onPressed: currentPage > 1
+                ? () => provider.setPage(currentPage - 1)
+                : null, // Disable nếu ở trang 1
+          ),
+
+          // 4. Text trang hiện tại
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              "$currentPage / ${totalPages == 0 ? 1 : totalPages}",
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+
+          // 5. Nút Next
+          IconButton(
+            icon: const Icon(FluentIcons.chevron_right, size: 12),
+            onPressed: currentPage < totalPages
+                ? () => provider.setPage(currentPage + 1)
+                : null, // Disable nếu ở trang cuối
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- Header Table (Giữ nguyên) ---
   Widget _buildTableHeader(FluentThemeData theme) {
     final headerStyle = TextStyle(
       fontSize: 12,
@@ -147,13 +228,18 @@ class _RobotPageState extends State<RobotPage> {
       child: Row(
         children: [
           Expanded(child: Text("ROBOT NAME", style: headerStyle)),
-          Expanded(child: Text("STATUS", style: headerStyle)),
-          Expanded(child: Text("ACTION", style: headerStyle)),
+          SizedBox(width: 100, child: Text("STATUS", style: headerStyle)),
+          Container(
+            width: 220,
+            alignment: Alignment.centerRight,
+            child: Text("ACTION", style: headerStyle),
+          ),
         ],
       ),
     );
   }
 
+  // --- Table Row (Giữ nguyên) ---
   Widget _buildTableRow(
     BuildContext context,
     Robot robot,
@@ -164,18 +250,14 @@ class _RobotPageState extends State<RobotPage> {
       child: Row(
         children: [
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  robot.name,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ],
+            child: Text(
+              robot.name,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          Expanded(
+          SizedBox(
+            width: 100,
             child: Align(
               alignment: Alignment.centerLeft,
               child: Container(
@@ -184,13 +266,13 @@ class _RobotPageState extends State<RobotPage> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Color(0xFFE8F5E9),
+                  color: const Color(0xFFE8F5E9),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Color(0xFF2E7D32).withValues(alpha: 0.2),
+                    color: const Color(0xFF2E7D32).withValues(alpha: 0.2),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   "Active",
                   style: TextStyle(
                     color: Color(0xFF2E7D32),
@@ -201,29 +283,31 @@ class _RobotPageState extends State<RobotPage> {
               ),
             ),
           ),
-          Expanded(
+          SizedBox(
+            width: 220,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               spacing: 10,
               children: [
                 FilledButton(
+                  onPressed: () => _handleRun(context, robot),
                   child: Row(
-                    spacing: 10,
-                    children: [
-                      WindowsIcon(WindowsIcons.play, size: 14.0),
+                    spacing: 8,
+                    children: const [
+                      Icon(FluentIcons.play, size: 12),
                       Text("Run"),
                     ],
                   ),
-                  onPressed: () => _handleRun(context, robot),
                 ),
                 FilledButton(
+                  onPressed: () => _handleSchedule(context, robot),
                   child: Row(
-                    spacing: 10,
-                    children: [
-                      WindowsIcon(WindowsIcons.calendar, size: 14.0),
+                    spacing: 8,
+                    children: const [
+                      Icon(FluentIcons.calendar, size: 12),
                       Text("Schedule"),
                     ],
                   ),
-                  onPressed: () => _handleSchedule(context, robot),
                 ),
               ],
             ),
@@ -235,19 +319,23 @@ class _RobotPageState extends State<RobotPage> {
 
   Future<void> _handleRun(BuildContext context, Robot robot) async {
     final provider = context.read<RobotProvider>();
-    final Map<String, dynamic>? parameters = await showDialog(
+    final dynamic parameters = await showDialog(
       context: context,
       builder: (ctx) => RunForm(dialogContext: ctx, robot: robot),
     );
-    if (parameters != null) provider.run(parameters);
+    if (parameters != null && parameters is Map<String, dynamic>) {
+      provider.run(parameters);
+    }
   }
 
   Future<void> _handleSchedule(BuildContext context, Robot robot) async {
     final provider = context.read<ScheduleProvider>();
-    final Map<String, String>? schedule = await showDialog(
+    final dynamic schedule = await showDialog(
       context: context,
       builder: (ctx) => ScheduleForm(dialogContext: ctx),
     );
-    if (schedule != null) provider.setSchedule(robot, schedule);
+    if (schedule != null && schedule is Map<String, String>) {
+      provider.setSchedule(robot, schedule);
+    }
   }
 }
