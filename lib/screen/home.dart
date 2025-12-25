@@ -9,83 +9,116 @@ import "../view/robot/robot.dart";
 import "../view/schedule/schedule.dart";
 import "../view/run/runs.dart";
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
 
   @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  // Biến để lưu reference provider nhằm remove listener khi dispose
+  late ServerProvider _serverProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    // 1. Đăng ký lắng nghe sự kiện khi widget được tạo
+    _serverProvider = context.read<ServerProvider>();
+    _serverProvider.addListener(_onServerChanged);
+  }
+
+  @override
+  void dispose() {
+    // 2. Hủy lắng nghe khi widget bị hủy (tránh memory leak)
+    _serverProvider.removeListener(_onServerChanged);
+    super.dispose();
+  }
+
+  // --- HÀM XỬ LÝ SIDE EFFECTS (Thông báo, Dialog...) ---
+  void _onServerChanged() {
+    // Kiểm tra mounted để đảm bảo widget còn tồn tại
+    if (!mounted) return;
+
+    final server = _serverProvider;
+
+    // Xử lý Error
+    if (server.errorMessage != null) {
+      final msg = server.errorMessage!;
+
+      // Show Notification
+      _showLocalNotification("Lỗi", msg);
+
+      // Show InfoBar
+      _showInfoBar(msg, InfoBarSeverity.error);
+
+      // Clear ngay lập tức để không hiện lại
+      server.clearErrorMessage();
+    }
+
+    // Xử lý Info Message
+    if (server.latestMessage != null) {
+      final msg = server.latestMessage!;
+
+      _showLocalNotification("Thông báo", msg);
+      _showInfoBar(msg, InfoBarSeverity.info);
+
+      server.clearLatestMessage();
+    }
+  }
+
+  void _showLocalNotification(String title, String body) {
+    LocalNotification(
+      identifier: DateTime.now().toString(),
+      title: title,
+      body: body,
+    ).show();
+  }
+
+  void _showInfoBar(String message, InfoBarSeverity severity) {
+    displayInfoBar(
+      context,
+      builder: (context, close) {
+        return InfoBar(
+          title: Text(severity == InfoBarSeverity.error ? 'Error' : 'Info'),
+          content: Text(message),
+          severity: severity,
+          onClose: close, // Cho phép user đóng thủ công
+        );
+      },
+      duration: const Duration(seconds: 3), // Tự tắt sau 3s
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    //
     final page = context.watch<PageProvider>();
+
     const EdgeInsets padding = EdgeInsets.symmetric(horizontal: 25);
     const EdgeInsets margin = EdgeInsets.only(bottom: 25);
 
-    return Consumer<ServerProvider>(
-      builder: (context, server, child) {
-        if (server.errorMessage != null) {
-          final message = server.errorMessage!;
-          LocalNotification(
-            identifier: DateTime.now().toString(),
-            title: "Thông báo",
-            body: message,
-          ).show();
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            displayInfoBar(
-              context,
-              builder: (context, close) {
-                return InfoBar(
-                  title: Text('Error'),
-                  content: Text(message),
-                  severity: InfoBarSeverity.error,
-                );
-              },
-            );
-            server.clearErrorMessage();
-          });
-        }
-        if (server.latestMessage != null) {
-          final message = server.latestMessage!;
-          LocalNotification(
-            identifier: DateTime.now().toString(),
-            title: "Thông báo",
-            body: message,
-          ).show();
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            displayInfoBar(
-              context,
-              builder: (context, close) {
-                return InfoBar(
-                  title: Text('Info'),
-                  content: Text(message),
-                  severity: InfoBarSeverity.info,
-                );
-              },
-            );
-            server.clearLatestMessage();
-          });
-          server.clearLatestMessage();
-        }
-        return ScaffoldPage(
-          padding: EdgeInsets.all(0),
-          header: const Header(padding: padding),
-          content: Container(
-            padding: padding,
-            margin: margin,
-            child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints _) {
-                if (page.getPage() == AppPage.runs) {
-                  return RunsPage();
-                } else if (page.getPage() == AppPage.schedule) {
-                  return SchedulePage();
-                } else if (page.getPage() == AppPage.log) {
-                  return ExecutionLogPage();
-                } else {
-                  return RobotPage();
-                }
-              },
-            ),
+    return ScaffoldPage(
+      padding: EdgeInsets.zero,
+      header: const Header(padding: padding),
+      content: Container(
+        padding: padding,
+        margin: margin,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (child, animation) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          child: KeyedSubtree(
+            key: ValueKey(page.getPage()),
+            child: switch (page.getPage()) {
+              AppPage.runs => const RunsPage(),
+              AppPage.schedule => const SchedulePage(),
+              AppPage.log => const ExecutionLogPage(),
+              _ => const RobotPage(),
+            },
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
