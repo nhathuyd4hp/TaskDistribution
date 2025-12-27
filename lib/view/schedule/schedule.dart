@@ -163,9 +163,11 @@ class _SchedulePageState extends State<SchedulePage> {
       child: Row(
         children: [
           Expanded(flex: 3, child: Text("ROBOT NAME", style: headerStyle)),
-          Expanded(flex: 2, child: Text("STATUS", style: headerStyle)),
-          Expanded(flex: 3, child: Text("NEXT RUN", style: headerStyle)),
-          Expanded(flex: 1, child: Text("ACTIONS", style: headerStyle)),
+          Expanded(flex: 1, child: Text("STATUS", style: headerStyle)),
+          Expanded(flex: 2, child: Text("NEXT RUN", style: headerStyle)),
+          Expanded(flex: 2, child: Text("START DATE", style: headerStyle)),
+          Expanded(flex: 2, child: Text("END DATE", style: headerStyle)),
+          Expanded(flex: 1, child: Text("DELETE", style: headerStyle)),
         ],
       ),
     );
@@ -193,11 +195,35 @@ class _SchedulePageState extends State<SchedulePage> {
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-          Expanded(flex: 2, child: _buildStatusBadge(schedule)),
+          Expanded(flex: 1, child: _buildStatusBadge(schedule)),
           Expanded(
-            flex: 3,
+            flex: 2,
             child: Text(
               nextRun,
+              style: TextStyle(
+                fontFamily: 'Consolas',
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: theme.resources.textFillColorSecondary,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              schedule.startDate.toString().split('.')[0],
+              style: TextStyle(
+                fontFamily: 'Consolas',
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: theme.resources.textFillColorSecondary,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              schedule.endDate.toString().split('.')[0],
               style: TextStyle(
                 fontFamily: 'Consolas',
                 fontWeight: FontWeight.bold,
