@@ -264,12 +264,12 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
               ),
               _buildInfoItem(
                 "Parameters",
-                run.parameters ?? "None",
+                run.parameters ?? "",
                 FluentIcons.variable,
               ),
               _buildInfoItem(
                 "Result",
-                run.result != null ? p.basename(run.result!) : "None",
+                run.result != null ? p.basename(run.result!) : "",
                 FluentIcons.doc_library,
               ),
             ],
@@ -343,7 +343,12 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
           SizedBox(
             width: 180,
             child: Text(
-              log.timestamp.toIso8601String().split('T')[1].split('.')[0],
+              '${log.timestamp.year}-'
+              '${log.timestamp.month.toString().padLeft(2, '0')}-'
+              '${log.timestamp.day.toString().padLeft(2, '0')} '
+              '${log.timestamp.hour.toString().padLeft(2, '0')}:'
+              '${log.timestamp.minute.toString().padLeft(2, '0')}:'
+              '${log.timestamp.second.toString().padLeft(2, '0')}',
               style: monoStyle.copyWith(
                 color: theme.resources.textFillColorPrimary,
               ),
