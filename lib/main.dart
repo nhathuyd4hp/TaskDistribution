@@ -5,6 +5,7 @@ import 'package:task_distribution/provider/robot/robot_filter.dart';
 import 'package:task_distribution/provider/run/run.dart';
 import 'package:task_distribution/provider/run/run_filter.dart';
 import 'package:task_distribution/provider/schedule/schedule.dart';
+import 'package:task_distribution/screen/login.dart';
 import 'package:task_distribution/service/robot.dart';
 import 'package:task_distribution/provider/page.dart';
 import 'package:task_distribution/provider/robot/robot.dart';
@@ -12,7 +13,6 @@ import 'package:task_distribution/provider/socket.dart';
 import 'package:task_distribution/service/run.dart';
 import 'package:task_distribution/service/schedule.dart';
 import 'package:window_manager/window_manager.dart';
-import "screen/home.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -121,7 +121,7 @@ class TaskDistribution extends StatelessWidget {
             glowFactor: is10footScreen(context) ? 2.0 : 0.0,
           ),
         ),
-        home: Home(),
+        home: Login(),
       ),
     );
   }
