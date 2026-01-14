@@ -269,7 +269,7 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
               ),
               _buildInfoItem(
                 "Result",
-                run.result != null ? p.basename(run.result!) : "",
+                run.status == "SUCCESS" ? p.basename(run.result!) : run.result!,
                 FluentIcons.doc_library,
               ),
             ],
@@ -312,16 +312,20 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
           SizedBox(width: 100, child: Text("LEVEL", style: style)),
           Expanded(child: Text("MESSAGE", style: style)),
           SizedBox(
-            width: 100,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton(
-                onPressed: (run != null)
-                    ? () => context.read<RunProvider>().download(run)
-                    : null,
-                child: const Text("Result"),
-              ),
-            ),
+            width: 125,
+            child: run != null && run.result != null && run.status == "SUCCESS"
+                ? FilledButton(
+                    onPressed: () => context.read<RunProvider>().download(run),
+                    child: Row(
+                      spacing: 10,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(FluentIcons.download, size: 16),
+                        Text("Download"),
+                      ],
+                    ),
+                  )
+                : null,
           ),
         ],
       ),

@@ -169,7 +169,7 @@ class _RunFormState extends State<RunForm> {
         maxWidth: 550,
         maxHeight: 200 + (robot.parameters.length * 50),
       ),
-      title: Text('Parameter Input'),
+      title: Text(robot.name),
       content: FutureBuilder<Robot>(
         future: robot.reGenerate(),
         builder: (context, snapshot) {

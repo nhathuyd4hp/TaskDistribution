@@ -101,11 +101,25 @@ class TaskDistribution extends StatelessWidget {
         title: "Task Distribution",
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.system,
-        theme: FluentThemeData(brightness: Brightness.light),
+        theme: FluentThemeData(
+          accentColor: Colors.teal,
+          brightness: Brightness.light,
+          visualDensity: VisualDensity.standard,
+          focusTheme: FocusThemeData(
+            glowFactor: is10footScreen(context) ? 2.0 : 0.0,
+          ),
+        ),
+
+        // --- DARK THEME ---
         darkTheme: FluentThemeData(
+          accentColor: Colors.teal,
           brightness: Brightness.dark,
-          scaffoldBackgroundColor: Color(0xff111823),
-          cardColor: Color(0xff19222c),
+          scaffoldBackgroundColor: const Color(0xff111823),
+          cardColor: const Color(0xff19222c),
+          visualDensity: VisualDensity.standard,
+          focusTheme: FocusThemeData(
+            glowFactor: is10footScreen(context) ? 2.0 : 0.0,
+          ),
         ),
         home: Home(),
       ),

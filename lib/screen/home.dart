@@ -41,11 +41,13 @@ class _HomeState extends State<Home> {
     if (server.errorMessage != null) {
       final msg = server.errorMessage!;
 
-      // Show Notification
-      _showLocalNotification("ERROR", msg);
-
-      // Show InfoBar
-      _showInfoBar(msg, InfoBarSeverity.error);
+      if (msg.toLowerCase().contains(
+        "WebSocketChannelException".toLowerCase(),
+      )) {
+        _showInfoBar(msg, InfoBarSeverity.error);
+      } else {
+        _showLocalNotification("ERROR", msg);
+      }
 
       // Clear ngay lập tức để không hiện lại
       server.clearErrorMessage();
@@ -56,7 +58,6 @@ class _HomeState extends State<Home> {
       final msg = server.latestMessage!;
 
       _showLocalNotification("INFO", msg);
-      _showInfoBar(msg, InfoBarSeverity.info);
 
       server.clearLatestMessage();
     }

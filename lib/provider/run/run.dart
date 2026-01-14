@@ -37,12 +37,7 @@ class RunProvider extends ChangeNotifier {
   }
 
   Future<void> download(Run run) async {
-    if (run.status != "SUCCESS") {
-      server.warning(run.result ?? "Run failed");
-      return;
-    }
-    if (run.result == null) {
-      server.warning("No result found");
+    if (run.status != "SUCCESS" || run.result == null) {
       return;
     }
     final String? directoryPath = await FilePicker.platform.getDirectoryPath(
