@@ -269,7 +269,9 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
               ),
               _buildInfoItem(
                 "Result",
-                run.status == "SUCCESS" ? p.basename(run.result!) : run.result!,
+                run.status == "SUCCESS"
+                    ? (run.result != null ? p.basename(run.result!) : "")
+                    : (run.result ?? ""),
                 FluentIcons.doc_library,
               ),
             ],
@@ -281,9 +283,9 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
 
   Widget _buildInfoItem(String label, String value, IconData icon) {
     return Row(
+      spacing: 8,
       children: [
         Icon(icon, size: 16, color: Colors.grey[100]),
-        const SizedBox(width: 8),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

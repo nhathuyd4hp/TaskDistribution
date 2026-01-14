@@ -266,16 +266,25 @@ class _RobotPageState extends State<RobotPage> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE8F5E9),
+                  // 1. Màu nền thay đổi theo trạng thái
+                  color: robot.active
+                      ? const Color(0xFFE8F5E9) // Xanh nhạt (Active)
+                      : const Color(0xFFFFEBEE), // Đỏ nhạt (Inactive)
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: const Color(0xFF2E7D32).withValues(alpha: 0.2),
+                    // 2. Màu viền thay đổi theo trạng thái
+                    color: robot.active
+                        ? const Color(0xFF2E7D32).withValues(alpha: 0.2)
+                        : const Color(0xFFC62828).withValues(alpha: 0.2),
                   ),
                 ),
-                child: const Text(
-                  "Active",
+                child: Text(
+                  robot.active ? "Active" : "Inactive",
                   style: TextStyle(
-                    color: Color(0xFF2E7D32),
+                    // 3. Màu chữ thay đổi theo trạng thái
+                    color: robot.active
+                        ? const Color(0xFF2E7D32) // Xanh đậm
+                        : const Color(0xFFC62828), // Đỏ đậm
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
