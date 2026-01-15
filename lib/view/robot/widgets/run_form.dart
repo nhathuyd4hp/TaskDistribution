@@ -176,11 +176,11 @@ class _RunFormState extends State<RunForm> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: ProgressBar());
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
+            return Text("${snapshot.error}");
           } else if (snapshot.hasData) {
             return _buildForm(snapshot.data!);
           }
-          return Text('ERROR');
+          return Text('Error');
         },
       ),
       actions: <Widget>[

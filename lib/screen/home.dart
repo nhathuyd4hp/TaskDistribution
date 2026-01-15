@@ -46,7 +46,7 @@ class _HomeState extends State<Home> {
       )) {
         _showInfoBar(msg, InfoBarSeverity.error);
       } else {
-        _showLocalNotification("ERROR", msg);
+        _showLocalNotification("Thông báo", msg);
       }
 
       // Clear ngay lập tức để không hiện lại
@@ -57,7 +57,7 @@ class _HomeState extends State<Home> {
     if (server.latestMessage != null) {
       final msg = server.latestMessage!;
 
-      _showLocalNotification("INFO", msg);
+      _showLocalNotification("Thông báo", msg);
 
       server.clearLatestMessage();
     }
@@ -76,7 +76,7 @@ class _HomeState extends State<Home> {
       context,
       builder: (context, close) {
         return InfoBar(
-          title: Text(severity == InfoBarSeverity.error ? 'Error' : 'Info'),
+          title: Text(""),
           content: Text(message),
           severity: severity,
           onClose: close,
