@@ -1,5 +1,4 @@
 import 'package:file_picker/file_picker.dart';
-import 'dart:io';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:task_distribution/model/robot.dart';
 
@@ -32,9 +31,7 @@ class _RunFormState extends State<RunForm> {
         parameter.annotation.lastIndexOf(']'),
       );
       final List<dynamic> items = content.split(',').map((e) {
-        // Xóa khoảng trắng và dấu nháy
         String clean = e.trim().replaceAll("'", "").replaceAll('"', "");
-        // Thử parse sang int, nếu null thì giữ nguyên là String
         return int.tryParse(clean) ?? clean;
       }).toList();
 
@@ -63,35 +60,67 @@ class _RunFormState extends State<RunForm> {
         mode: SpinButtonPlacementMode.inline,
       );
     }
-    if (parameter.annotation.toLowerCase().contains("bytes")) {
-      String displayText = _controllers[parameter.name] != null
-          ? "File Selected (Ready)"
-          : "Choose file";
-      return FilledButton(
-        onPressed: () async {
-          FilePickerResult? result = await FilePicker.platform.pickFiles(
-            dialogTitle: "Select File",
-            lockParentWindow: true,
-            allowMultiple: false,
-          );
-          if (result == null) return;
-          String path = result.files.single.path!;
-          var fileBytes = await File(path).readAsBytes();
-          setState(() {
-            _controllers[parameter.name] = fileBytes;
-          });
-        },
-        child: Text(displayText),
+    if (parameter.annotation.toLowerCase().contains("_io.bytesio")) {
+      final String currentPath = _controllers[parameter.name]?.toString() ?? "";
+      return Row(
+        spacing: 5,
+        children: [
+          Expanded(
+            child: TextBox(
+              placeholder: 'No file selected',
+              readOnly: true,
+              controller: TextEditingController(text: currentPath),
+              suffix: currentPath.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(FluentIcons.clear),
+                      onPressed: () {
+                        setState(() {
+                          _controllers[parameter.name] = null;
+                        });
+                      },
+                    )
+                  : null,
+            ),
+          ),
+          Button(
+            child: const Icon(FluentIcons.folder_open),
+            onPressed: () async {
+              FilePickerResult? result = await FilePicker.platform.pickFiles(
+                dialogTitle: "Select a file",
+                lockParentWindow: true,
+                allowMultiple: false,
+                type: FileType.any,
+              );
+              if (result != null) {
+                setState(() {
+                  _controllers[parameter.name] = result.files.single.path;
+                });
+              }
+            },
+          ),
+        ],
       );
     }
     if (parameter.annotation.toLowerCase().contains("bool")) {
-      return Checkbox(
-        checked: _controllers[parameter.name],
-        onChanged: (value) {
-          setState(() {
-            _controllers[parameter.name] = value;
-          });
-        },
+      final bool isChecked = _controllers[parameter.name] == true;
+      return Container(
+        height: 32,
+        alignment: Alignment.centerLeft,
+        child: ToggleSwitch(
+          checked: isChecked,
+          content: Text(
+            isChecked ? "Enabled" : "Disabled",
+            style: TextStyle(
+              color: isChecked ? Colors.blue : Colors.grey[100],
+              fontWeight: isChecked ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+          onChanged: (value) {
+            setState(() {
+              _controllers[parameter.name] = value;
+            });
+          },
+        ),
       );
     }
     return TextBox(
@@ -150,7 +179,7 @@ class _RunFormState extends State<RunForm> {
       } else if (p.annotation.toLowerCase().contains('int')) {
         _controllers[p.name] = defaultValue;
       } else if (p.annotation.toLowerCase().contains('bytes')) {
-        _controllers[p.name] = defaultValue;
+        _controllers[p.name] = null;
       } else if (p.annotation.toLowerCase().contains('bool')) {
         _controllers[p.name] = defaultValue
             ? bool.parse(defaultValue.toString())
@@ -166,7 +195,7 @@ class _RunFormState extends State<RunForm> {
     final Robot robot = widget.robot;
     return ContentDialog(
       constraints: BoxConstraints(
-        maxWidth: 550,
+        maxWidth: 600,
         maxHeight: 200 + (robot.parameters.length * 50),
       ),
       title: Text(robot.name),
@@ -191,7 +220,7 @@ class _RunFormState extends State<RunForm> {
           },
         ),
         FilledButton(
-          child: Text('Confirm'),
+          child: Text('Run'),
           onPressed: () {
             final Map<String, String> data = _controllers.map((key, value) {
               return MapEntry(key, value.toString());
