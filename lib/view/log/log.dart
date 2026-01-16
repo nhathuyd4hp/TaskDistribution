@@ -57,7 +57,7 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
     });
 
     try {
-      final uri = Uri.parse('${TaskDistribution.backendUrl}/api/logs/$runId');
+      final uri = Uri.parse('${RobotAutomation.backendUrl}/api/logs/$runId');
       final request = http.Request('GET', uri);
       final response = await request.send();
       if (response.statusCode == 200) {

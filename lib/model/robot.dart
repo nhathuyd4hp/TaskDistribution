@@ -62,7 +62,7 @@ class Robot {
         );
       }
       final url = Uri.parse(
-        "${TaskDistribution.backendUrl}${parameter.defaultValue}",
+        "${RobotAutomation.backendUrl}${parameter.defaultValue}",
       );
       final response = await http.get(url);
       if (response.statusCode != 200) {

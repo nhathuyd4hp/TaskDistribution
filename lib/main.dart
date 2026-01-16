@@ -18,8 +18,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   WindowOptions windowOptions = const WindowOptions(
-    minimumSize: Size(1400, 800),
-    size: Size(1400, 800),
+    minimumSize: Size(1200, 600),
+    size: Size(1200, 600),
     center: true,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
@@ -32,10 +32,10 @@ void main() async {
     shortcutPolicy: ShortcutPolicy.requireCreate,
   );
   // Run
-  runApp(const TaskDistribution());
+  runApp(const RobotAutomation());
 }
 
-class TaskDistribution extends StatelessWidget {
+class RobotAutomation extends StatelessWidget {
   // -- Enviroment
   static const String domain = String.fromEnvironment(
     'domain',
@@ -49,7 +49,7 @@ class TaskDistribution extends StatelessWidget {
   static const String backendUrl = '$httpScheme://$domain';
   static const String wsUrl = '$wsScheme://$domain/ws';
 
-  const TaskDistribution({super.key});
+  const RobotAutomation({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +98,7 @@ class TaskDistribution extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RunFilterProvider()),
       ],
       child: FluentApp(
-        title: "Task Distribution",
+        title: "Robot Automation",
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.system,
         theme: FluentThemeData(
