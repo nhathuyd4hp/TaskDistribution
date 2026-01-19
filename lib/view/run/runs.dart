@@ -7,6 +7,7 @@ import "package:task_distribution/provider/page.dart";
 import "package:task_distribution/provider/run/run_filter.dart";
 import "package:task_distribution/model/run.dart";
 import "package:task_distribution/provider/run/run.dart";
+import "package:task_distribution/provider/socket.dart";
 
 class RunsPage extends StatefulWidget {
   const RunsPage({super.key});
@@ -43,6 +44,7 @@ class _RunsPageState extends State<RunsPage> {
   @override
   Widget build(BuildContext context) {
     final theme = FluentTheme.of(context);
+    final server = context.watch<ServerProvider>();
 
     // Toolbar
     final toolbar = Row(
@@ -125,6 +127,40 @@ class _RunsPageState extends State<RunsPage> {
           // CONSUMER: Xử lý cả Filter và Pagination
           child: Consumer2<RunProvider, RunFilterProvider>(
             builder: (context, runProvider, filterProvider, child) {
+              if (server.status == ConnectionStatus.connecting) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const ProgressRing(),
+                      const SizedBox(height: 12),
+                      Text(
+                        "Connecting to server...",
+                        style: theme.typography.body,
+                      ),
+                    ],
+                  ),
+                );
+              }
+              if (server.status == ConnectionStatus.disconnected) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        FluentIcons.plug_disconnected,
+                        size: 48,
+                        color: theme.resources.textFillColorSecondary,
+                      ),
+                      const SizedBox(height: 16),
+                      Text("Disconnected", style: theme.typography.title),
+                      const SizedBox(height: 8),
+                      Text(server.errorMessage ?? "Lost connection to server"),
+                    ],
+                  ),
+                );
+              }
+
               // 1. Lấy toàn bộ danh sách đã filter (để đếm tổng)
               final fullFilteredList = filterProvider.apply(runProvider.runs);
 

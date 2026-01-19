@@ -8,6 +8,7 @@ import "package:task_distribution/view/robot/widgets/schedule_form.dart";
 import "package:task_distribution/model/robot.dart";
 import "package:task_distribution/provider/robot/robot.dart";
 import "package:task_distribution/provider/schedule/schedule.dart";
+import "package:task_distribution/provider/socket.dart";
 
 class RobotPage extends StatefulWidget {
   const RobotPage({super.key});
@@ -35,6 +36,7 @@ class _RobotPageState extends State<RobotPage> {
   @override
   Widget build(BuildContext context) {
     final theme = FluentTheme.of(context);
+    final server = context.watch<ServerProvider>();
 
     // Search Box
     final searchBox = Selector<RobotFilterProvider, String>(
@@ -64,7 +66,10 @@ class _RobotPageState extends State<RobotPage> {
       header: PageHeader(
         padding: 0,
         title: const Text('Robot'),
-        commandBar: SizedBox(width: 300, child: searchBox),
+        commandBar: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [SizedBox(width: 300, child: searchBox)],
+        ),
       ),
       content: Padding(
         padding: const EdgeInsets.all(0),
@@ -87,6 +92,40 @@ class _RobotPageState extends State<RobotPage> {
           // --- LOGIC CHÍNH ---
           child: Consumer2<RobotProvider, RobotFilterProvider>(
             builder: (context, robotProvider, filterProvider, child) {
+              if (server.status == ConnectionStatus.connecting) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const ProgressRing(),
+                      const SizedBox(height: 12),
+                      Text(
+                        "Connecting to server...",
+                        style: theme.typography.body,
+                      ),
+                    ],
+                  ),
+                );
+              }
+              if (server.status == ConnectionStatus.disconnected) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        FluentIcons.plug_disconnected,
+                        size: 48,
+                        color: theme.resources.textFillColorSecondary,
+                      ),
+                      const SizedBox(height: 16),
+                      Text("Disconnected", style: theme.typography.title),
+                      const SizedBox(height: 8),
+                      Text(server.errorMessage ?? "Lost connection to server"),
+                    ],
+                  ),
+                );
+              }
+
               // 1. Lọc dữ liệu gốc (Search/Filter) -> Ra danh sách đầy đủ
               final fullFilteredList = filterProvider.apply(
                 robotProvider.robots,

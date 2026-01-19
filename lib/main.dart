@@ -5,6 +5,7 @@ import 'package:task_distribution/provider/robot/robot_filter.dart';
 import 'package:task_distribution/provider/run/run.dart';
 import 'package:task_distribution/provider/run/run_filter.dart';
 import 'package:task_distribution/provider/schedule/schedule.dart';
+import 'package:task_distribution/screen/home.dart';
 import 'package:task_distribution/service/robot.dart';
 import 'package:task_distribution/provider/page.dart';
 import 'package:task_distribution/provider/robot/robot.dart';
@@ -12,14 +13,13 @@ import 'package:task_distribution/provider/socket.dart';
 import 'package:task_distribution/service/run.dart';
 import 'package:task_distribution/service/schedule.dart';
 import 'package:window_manager/window_manager.dart';
-import "screen/home.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   WindowOptions windowOptions = const WindowOptions(
-    minimumSize: Size(1200, 600),
-    size: Size(1200, 600),
+    minimumSize: Size(1050, 600),
+    size: Size(1050, 600),
     center: true,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {

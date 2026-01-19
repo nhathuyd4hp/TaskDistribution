@@ -3,6 +3,7 @@ import "package:provider/provider.dart";
 import "package:task_distribution/core/widget/empty_state.dart";
 import "package:task_distribution/model/schedule.dart";
 import "package:task_distribution/provider/schedule/schedule.dart";
+import "package:task_distribution/provider/socket.dart";
 
 class SchedulePage extends StatefulWidget {
   const SchedulePage({super.key});
@@ -17,6 +18,7 @@ class _SchedulePageState extends State<SchedulePage> {
   Widget build(BuildContext context) {
     final scheduleProvider = context.watch<ScheduleProvider>();
     final theme = FluentTheme.of(context);
+    final server = context.watch<ServerProvider>();
 
     // Logic lọc dữ liệu
     final filtered = scheduleProvider.schedules.where((schedule) {
@@ -37,9 +39,9 @@ class _SchedulePageState extends State<SchedulePage> {
         title: const Text("Schedule"),
         commandBar: Row(
           mainAxisAlignment: MainAxisAlignment.end,
-          spacing: 25,
           children: [
-            Expanded(
+            SizedBox(
+              width: 300,
               child: TextBox(
                 placeholder: 'Search...',
                 prefix: const Padding(
@@ -54,6 +56,7 @@ class _SchedulePageState extends State<SchedulePage> {
                 onChanged: (value) => setState(() => nameContains = value),
               ),
             ),
+            const SizedBox(width: 16),
           ],
         ),
       ),
@@ -71,54 +74,90 @@ class _SchedulePageState extends State<SchedulePage> {
                     color: theme.resources.dividerStrokeColorDefault,
                   ),
                 ),
-                child: Column(
-                  children: [
-                    // Header của bảng
-                    _buildTableHeader(theme),
-                    const Divider(),
-                    Expanded(
-                      child: filtered.isEmpty
-                          ? EmptyState()
-                          : ListView.separated(
-                              itemCount: filtered.length,
-                              separatorBuilder: (ctx, i) => const Divider(),
-                              itemBuilder: (context, index) {
-                                return _buildTableRow(
-                                  context,
-                                  filtered[index],
-                                  theme,
-                                );
-                              },
+                child: server.status == ConnectionStatus.connecting
+                    ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const ProgressRing(),
+                            const SizedBox(height: 12),
+                            Text(
+                              "Connecting to server...",
+                              style: theme.typography.body,
                             ),
-                    ),
-
-                    // Footer thống kê
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: theme.scaffoldBackgroundColor.withValues(
-                          alpha: 0.5,
+                          ],
                         ),
-                        border: Border(
-                          top: BorderSide(
-                            color: theme.resources.dividerStrokeColorDefault,
+                      )
+                    : server.status == ConnectionStatus.disconnected
+                    ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              FluentIcons.plug_disconnected,
+                              size: 48,
+                              color: theme.resources.textFillColorSecondary,
+                            ),
+                            const SizedBox(height: 16),
+                            Text("Disconnected", style: theme.typography.title),
+                            const SizedBox(height: 8),
+                            Text(
+                              server.errorMessage ??
+                                  "Lost connection to server",
+                            ),
+                          ],
+                        ),
+                      )
+                    : Column(
+                        children: [
+                          // Header của bảng
+                          _buildTableHeader(theme),
+                          const Divider(),
+                          Expanded(
+                            child: filtered.isEmpty
+                                ? EmptyState()
+                                : ListView.separated(
+                                    itemCount: filtered.length,
+                                    separatorBuilder: (ctx, i) =>
+                                        const Divider(),
+                                    itemBuilder: (context, index) {
+                                      return _buildTableRow(
+                                        context,
+                                        filtered[index],
+                                        theme,
+                                      );
+                                    },
+                                  ),
                           ),
-                        ),
-                        borderRadius: const BorderRadius.vertical(
-                          bottom: Radius.circular(8),
-                        ),
+
+                          // Footer thống kê
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: theme.scaffoldBackgroundColor.withValues(
+                                alpha: 0.5,
+                              ),
+                              border: Border(
+                                top: BorderSide(
+                                  color:
+                                      theme.resources.dividerStrokeColorDefault,
+                                ),
+                              ),
+                              borderRadius: const BorderRadius.vertical(
+                                bottom: Radius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              "Count: ${filtered.length}",
+                              style: theme.typography.body,
+                            ),
+                          ),
+                        ],
                       ),
-                      child: Text(
-                        "Count: ${filtered.length}",
-                        style: theme.typography.body,
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ),
           ],

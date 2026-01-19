@@ -11,6 +11,7 @@ import 'package:task_distribution/model/log.dart';
 import 'package:task_distribution/model/run.dart';
 import 'package:task_distribution/provider/run/run.dart';
 import 'package:task_distribution/provider/run/run_filter.dart'; // Import quan trọng
+import "package:task_distribution/provider/socket.dart";
 
 class ExecutionLogPage extends StatefulWidget {
   const ExecutionLogPage({super.key});
@@ -95,6 +96,7 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
   Widget build(BuildContext context) {
     final runProvider = context.watch<RunProvider>();
     final filterProvider = context.watch<RunFilterProvider>(); // Watch filter
+    final server = context.watch<ServerProvider>();
     final theme = FluentTheme.of(context);
 
     // Ưu tiên lấy ID từ Provider (Single Source of Truth)
@@ -119,7 +121,6 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
         title: const Text('Execution Log'),
         commandBar: AutoSuggestBox<String>(
           placeholder: 'Search...',
-          // Hiển thị ID đang chọn lên ô tìm kiếm
           controller: displayId != null
               ? TextEditingController(text: displayId)
               : null,
@@ -176,38 +177,85 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
                   ],
                 ),
                 child: Column(
-                  children: [
-                    _buildLogTableHeader(theme, currentRun),
-                    const Divider(),
-                    Expanded(
-                      child: logs.isEmpty
-                          ? Center(
-                              child: Text(
-                                displayId == null
-                                    ? "Select a run to view logs"
-                                    : "Waiting for logs...",
-                              ),
-                            )
-                          : ListView.separated(
-                              controller: _scrollController,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              itemCount: logs.length,
-                              separatorBuilder: (ctx, i) => Divider(
-                                style: DividerThemeData(
-                                  thickness: 0.5,
-                                  decoration: BoxDecoration(
-                                    color: theme
-                                        .resources
-                                        .dividerStrokeColorDefault,
-                                  ),
-                                ),
-                              ),
-                              itemBuilder: (context, index) {
-                                return _buildLogTableRow(logs[index], theme);
-                              },
+                  children: server.status != ConnectionStatus.connected
+                      ? [
+                          Expanded(
+                            child: Center(
+                              child:
+                                  server.status == ConnectionStatus.connecting
+                                  ? Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const ProgressRing(),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          "Connecting to server...",
+                                          style: theme.typography.body,
+                                        ),
+                                      ],
+                                    )
+                                  : Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          FluentIcons.plug_disconnected,
+                                          size: 48,
+                                          color: theme
+                                              .resources
+                                              .textFillColorSecondary,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          "Disconnected",
+                                          style: theme.typography.title,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          server.errorMessage ??
+                                              "Lost connection to server",
+                                        ),
+                                      ],
+                                    ),
                             ),
-                    ),
-                  ],
+                          ),
+                        ]
+                      : [
+                          _buildLogTableHeader(theme, currentRun),
+                          const Divider(),
+                          Expanded(
+                            child: logs.isEmpty
+                                ? Center(
+                                    child: Text(
+                                      displayId == null
+                                          ? "Select a run to view logs"
+                                          : "Waiting for logs...",
+                                    ),
+                                  )
+                                : ListView.separated(
+                                    controller: _scrollController,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                    ),
+                                    itemCount: logs.length,
+                                    separatorBuilder: (ctx, i) => Divider(
+                                      style: DividerThemeData(
+                                        thickness: 0.5,
+                                        decoration: BoxDecoration(
+                                          color: theme
+                                              .resources
+                                              .dividerStrokeColorDefault,
+                                        ),
+                                      ),
+                                    ),
+                                    itemBuilder: (context, index) {
+                                      return _buildLogTableRow(
+                                        logs[index],
+                                        theme,
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ],
                 ),
               ),
             ),

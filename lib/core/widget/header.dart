@@ -1,6 +1,5 @@
 import "package:fluent_ui/fluent_ui.dart";
 import "package:provider/provider.dart";
-import "package:task_distribution/core/widget/server_status_badge.dart";
 import 'package:task_distribution/provider/page.dart';
 import "package:task_distribution/provider/socket.dart";
 
@@ -67,7 +66,19 @@ class Header extends StatelessWidget {
             ],
           ),
           Spacer(),
-          ServerStatusBadge(status: connectionStatus),
+          FilledButton(
+            onPressed: () {},
+            child: Row(
+              spacing: 10,
+              children: [
+                Icon(FluentIcons.signin, size: 16),
+                Text(
+                  "Log In",
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
