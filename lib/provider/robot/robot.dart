@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:task_distribution/model/run.dart';
 import 'package:task_distribution/service/robot.dart';
 import 'package:task_distribution/provider/socket.dart';
 import "../../model/robot.dart";
@@ -37,11 +38,11 @@ class RobotProvider extends ChangeNotifier {
   }
 
   Future<void> run(Map<String, dynamic> parameters) async {
-    final (success, message) = await repository.run(parameters);
-    if (success) {
-      server.notification(message);
+    final Run? run = await repository.run(parameters);
+    if (run != null) {
+      server.notification("Yêu cầu thành công");
     } else {
-      server.warning(message);
+      server.notification("Yêu cầu thất bại");
     }
   }
 }

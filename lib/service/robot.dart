@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:task_distribution/model/api_response.dart';
 import 'package:task_distribution/model/robot.dart';
+import 'package:task_distribution/model/run.dart';
 
 class RobotClient {
   final String backend;
@@ -21,21 +23,21 @@ class RobotClient {
     return robots;
   }
 
-  Future<(bool, String)> run(Map<String, dynamic> parameters) async {
-    try {
-      final url = Uri.parse("$backend/api/robots/run");
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(parameters),
-      );
-      if (response.statusCode != 200) {
-        return (false, response.body);
-      }
-      Map<String, dynamic> responseJson = jsonDecode(response.body);
-      return (true, responseJson['data']['id'].toString());
-    } catch (e) {
-      return (false, e.toString());
+  Future<Run?> run(Map<String, dynamic> parameters) async {
+    final url = Uri.parse("$backend/api/robots/run");
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(parameters),
+    );
+    if (response.statusCode != 200) {
+      return null;
     }
+    Map<String, dynamic> responseJson = jsonDecode(response.body);
+    final apiResponse = APIResponse<Run>.fromJson(
+      responseJson,
+      (data) => Run.fromJson(data as Map<String, dynamic>),
+    );
+    return apiResponse.data;
   }
 }

@@ -5,7 +5,6 @@ class Schedule {
   final DateTime? nextRunTime;
   final DateTime? startDate;
   final DateTime? endDate;
-  final String status;
 
   Schedule({
     required this.id,
@@ -14,7 +13,6 @@ class Schedule {
     this.nextRunTime,
     this.startDate,
     this.endDate,
-    required this.status,
   });
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
@@ -31,7 +29,6 @@ class Schedule {
       endDate: json['end_date'] != null
           ? DateTime.parse(json['end_date'])
           : null,
-      status: json['status'] as String,
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:open_file/open_file.dart';
 import 'package:task_distribution/model/run.dart';
 import 'package:task_distribution/provider/socket.dart';
 import 'package:task_distribution/service/run.dart';
@@ -41,20 +42,22 @@ class RunProvider extends ChangeNotifier {
       return;
     }
     final String? directoryPath = await FilePicker.platform.getDirectoryPath(
-      dialogTitle: "Save file",
+      dialogTitle: "Save",
       lockParentWindow: true,
     );
     if (directoryPath == null) {
       return;
     }
-    final (success, message) = await repository.getResult(
+    final bool success = await repository.result(
       run: run,
       savePath: directoryPath,
     );
-    if (success) {
-      server.notification(message);
-    } else {
-      server.warning(message);
-    }
+    if (!success) return server.notification("Lưu thất bại!");
+    server.notification(
+      "Lưu thành công",
+      callBack: () async {
+        await OpenFile.open(directoryPath);
+      },
+    );
   }
 }

@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as p;
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:task_distribution/model/api_response.dart';
 import 'package:task_distribution/model/run.dart';
 
 class RunClient {
@@ -17,30 +17,45 @@ class RunClient {
       return [];
     }
     final Map<String, dynamic> responseJson = jsonDecode(response.body);
-    final data = responseJson['data'];
-    final List<Run> runs = data
-        .map<Run>((e) => Run.fromJson(e as Map<String, dynamic>))
-        .toList();
-    return runs;
+
+    final apiResponse = APIResponse<List<Run>>.fromJson(
+      responseJson,
+      (data) => (data as List<dynamic>)
+          .map((item) => Run.fromJson(item as Map<String, dynamic>))
+          .toList(),
+    );
+    return apiResponse.data ?? [];
   }
 
-  Future<(bool, String)> getResult({
-    required Run run,
-    required String savePath,
-  }) async {
-    try {
-      final url = Uri.parse("$backend/api/runs/result/${run.id}");
-      final response = await http.get(url);
-      if (response.statusCode != 200) {
-        return (false, "Không tìm thấy file kết quả");
-      }
-      final String filePath = p.join(savePath, p.basename(run.result!));
-      final file = File(filePath);
-      await file.writeAsBytes(response.bodyBytes);
-      await OpenFile.open(filePath);
-      return (true, filePath);
-    } catch (e) {
-      return (false, e.toString());
-    }
+  // Future<Run?> getRun(String id) async {
+  //   final url = Uri.parse("$backend/api/runs/$id");
+  //   final response = await http.get(url);
+  //   if (response.statusCode != 200) {
+  //     return null;
+  //   }
+  //   final Map<String, dynamic> responseJson = jsonDecode(response.body);
+
+  //   final apiResponse = APIResponse<Run>.fromJson(
+  //     responseJson,
+  //     (data) => Run.fromJson(data as Map<String, dynamic>),
+  //   );
+  //   return apiResponse.data;
+  // }
+
+  Future<bool> result({required Run run, required String savePath}) async {
+    if (run.result == null) return false;
+    // Tách chuỗi
+    final List<String> parts = run.result!.split('/');
+    final String bucket = parts[0];
+    final String objectName = parts.sublist(1).join("/");
+    // Call API
+    final url = Uri.parse("$backend/api/assets/$bucket?objectName=$objectName");
+    final response = await http.get(url);
+    if (response.statusCode != 200) return false;
+    // Save
+    final String filePath = p.join(savePath, p.basename(run.result!));
+    final file = File(filePath);
+    await file.writeAsBytes(response.bodyBytes);
+    return true;
   }
 }

@@ -13,15 +13,6 @@ class SchedulePage extends StatefulWidget {
 
 class _SchedulePageState extends State<SchedulePage> {
   String nameContains = "";
-  String statusFilter = "--";
-
-  // Map hiển thị dropdown
-  final Map<String, String> statusMap = {
-    "--": "--",
-    "Active": "Active",
-    "Expired": "Expired",
-  };
-
   @override
   Widget build(BuildContext context) {
     final scheduleProvider = context.watch<ScheduleProvider>();
@@ -37,13 +28,7 @@ class _SchedulePageState extends State<SchedulePage> {
                 .replaceAll("_", " ")
                 .toLowerCase()
                 .contains(nameContains.toLowerCase());
-
-      final filterValue = statusMap[statusFilter] ?? "--";
-      final matchesStatus = filterValue == "--"
-          ? true
-          : schedule.status.toLowerCase() == filterValue.toLowerCase();
-
-      return matchesName && matchesStatus;
+      return matchesName;
     }).toList();
 
     return ScaffoldPage(
@@ -54,16 +39,6 @@ class _SchedulePageState extends State<SchedulePage> {
           mainAxisAlignment: MainAxisAlignment.end,
           spacing: 25,
           children: [
-            // Dropdown Lọc trạng thái
-            ComboBox<String>(
-              value: statusFilter,
-              items: statusMap.keys.map((e) {
-                return ComboBoxItem(value: e, child: Text(e));
-              }).toList(),
-              onChanged: (value) {
-                if (value != null) setState(() => statusFilter = value);
-              },
-            ),
             Expanded(
               child: TextBox(
                 placeholder: 'Search...',
@@ -252,8 +227,7 @@ class _SchedulePageState extends State<SchedulePage> {
     Color textColor;
     IconData icon;
 
-    // Logic màu sắc cho Active/Expired
-    if (schedule.status.toLowerCase() == 'active') {
+    if (schedule.nextRunTime != null) {
       bgColor = const Color(0xFFE8F5E9);
       textColor = const Color(0xFF2E7D32);
       icon = FluentIcons.clock;
@@ -278,7 +252,7 @@ class _SchedulePageState extends State<SchedulePage> {
             Icon(icon, size: 12, color: textColor),
             const SizedBox(width: 6),
             Text(
-              schedule.status,
+              schedule.nextRunTime != null ? "Active" : "Expired",
               style: TextStyle(
                 color: textColor,
                 fontSize: 12,
@@ -296,15 +270,15 @@ class _SchedulePageState extends State<SchedulePage> {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => ContentDialog(
-        title: const Text('Confirm Delete'),
-
+        constraints: BoxConstraints(maxWidth: 600),
+        title: Text('Delete: ${schedule.name}'),
         actions: [
           Button(
             child: const Text('Cancel'),
             onPressed: () => Navigator.pop(context, false),
           ),
           FilledButton(
-            child: const Text('Confirm'),
+            child: const Text('Delete'),
             onPressed: () {
               Navigator.pop(context, true);
             },
@@ -314,7 +288,7 @@ class _SchedulePageState extends State<SchedulePage> {
     );
 
     if (result == true) {
-      provider.delete(schedule);
+      provider.deleteSchedule(schedule);
     }
   }
 }

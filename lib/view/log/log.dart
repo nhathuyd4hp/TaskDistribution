@@ -317,7 +317,9 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
             width: 125,
             child: run != null && run.result != null && run.status == "SUCCESS"
                 ? FilledButton(
-                    onPressed: () => context.read<RunProvider>().download(run),
+                    onPressed: () => {
+                      context.read<RunProvider>().download(run),
+                    },
                     child: Row(
                       spacing: 10,
                       mainAxisAlignment: MainAxisAlignment.center,

@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:http/http.dart' as http;
+import 'package:task_distribution/main.dart';
+import 'package:task_distribution/model/api_response.dart';
 import 'package:task_distribution/model/robot.dart';
 
 class RunForm extends StatefulWidget {
@@ -13,6 +18,8 @@ class RunForm extends StatefulWidget {
 
 class _RunFormState extends State<RunForm> {
   final Map<String, dynamic> _controllers = {};
+  final Map<String, bool> _idLoading = {};
+  late Future<Robot> _robotFuture;
 
   Widget _buildInput(Parameter parameter) {
     if (parameter.annotation.toLowerCase().contains("datetime")) {
@@ -63,7 +70,7 @@ class _RunFormState extends State<RunForm> {
     if (parameter.annotation.toLowerCase().contains("_io.bytesio")) {
       final String currentPath = _controllers[parameter.name]?.toString() ?? "";
       return Row(
-        spacing: 5,
+        spacing: 8,
         children: [
           Expanded(
             child: TextBox(
@@ -83,20 +90,61 @@ class _RunFormState extends State<RunForm> {
             ),
           ),
           Button(
-            child: const Icon(FluentIcons.folder_open),
-            onPressed: () async {
-              FilePickerResult? result = await FilePicker.platform.pickFiles(
-                dialogTitle: "Select a file",
-                lockParentWindow: true,
-                allowMultiple: false,
-                type: FileType.any,
-              );
-              if (result != null) {
-                setState(() {
-                  _controllers[parameter.name] = result.files.single.path;
-                });
-              }
-            },
+            onPressed: _idLoading[parameter.name] == true
+                ? null
+                : () async {
+                    FilePickerResult? result = await FilePicker.platform
+                        .pickFiles(
+                          dialogTitle: "Select a file",
+                          lockParentWindow: true,
+                          allowMultiple: false,
+                          type: FileType.any,
+                        );
+                    if (result == null) return;
+                    setState(() {
+                      _idLoading[parameter.name] = true;
+                    });
+                    final String filePath = result.files.single.path!;
+                    final uri = Uri.parse(
+                      "${RobotAutomation.backendUrl}/api/assets",
+                    );
+                    var request = http.MultipartRequest('POST', uri);
+                    request.files.add(
+                      await http.MultipartFile.fromPath('file', filePath),
+                    );
+                    var streamedResponse = await request.send();
+                    var response = await http.Response.fromStream(
+                      streamedResponse,
+                    );
+                    if (response.statusCode != 200) {
+                      if (context.mounted) {
+                        setState(() {
+                          _controllers[parameter.name] = null;
+                          _idLoading[parameter.name] = false;
+                        });
+                      }
+                    }
+                    final Map<String, dynamic> responseJSON = jsonDecode(
+                      response.body,
+                    );
+                    final apiResponse = APIResponse<String>.fromJson(
+                      responseJSON,
+                      (data) => data.toString(),
+                    );
+                    if (context.mounted) {
+                      setState(() {
+                        _controllers[parameter.name] = apiResponse.data;
+                        _idLoading[parameter.name] = false;
+                      });
+                    }
+                  },
+            child: _idLoading[parameter.name] == true
+                ? SizedBox(
+                    width: 19,
+                    height: 19,
+                    child: const ProgressRing(strokeWidth: 2.5),
+                  )
+                : Icon(FluentIcons.folder_open),
           ),
         ],
       );
@@ -145,7 +193,7 @@ class _RunFormState extends State<RunForm> {
 
   Widget _buildForm(Robot robot) {
     if (robot.parameters.isEmpty) {
-      return Container();
+      return SizedBox(width: 0, height: 0);
     }
     return Column(
       spacing: 25,
@@ -168,10 +216,36 @@ class _RunFormState extends State<RunForm> {
     );
   }
 
+  Future<Robot> _initRobotData() async {
+    try {
+      final result = await widget.robot.reGenerate();
+      if (mounted) {
+        setState(() {
+          _idLoading.updateAll((key, value) => false);
+        });
+      }
+      return result;
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _idLoading.updateAll((key, value) => false);
+        });
+      }
+      rethrow;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _robotFuture = _initRobotData();
     for (var p in widget.robot.parameters) {
+      if (p.annotation.toLowerCase().contains("type.api")) {
+        _idLoading[p.name] = true;
+      } else {
+        _idLoading[p.name] = false;
+      }
+      // ------ //
       var defaultValue = p.defaultValue;
       if (p.annotation.toLowerCase().contains('datetime')) {
         _controllers[p.name] =
@@ -200,7 +274,7 @@ class _RunFormState extends State<RunForm> {
       ),
       title: Text(robot.name),
       content: FutureBuilder<Robot>(
-        future: robot.reGenerate(),
+        future: _robotFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: ProgressBar());
@@ -209,7 +283,7 @@ class _RunFormState extends State<RunForm> {
           } else if (snapshot.hasData) {
             return _buildForm(snapshot.data!);
           }
-          return Text('Error');
+          return Text("");
         },
       ),
       actions: <Widget>[
@@ -220,16 +294,23 @@ class _RunFormState extends State<RunForm> {
           },
         ),
         FilledButton(
-          child: Text('Run'),
-          onPressed: () {
-            final Map<String, String> data = _controllers.map((key, value) {
-              return MapEntry(key, value.toString());
-            });
-            Navigator.pop(widget.dialogContext, {
-              "name": robot.name,
-              "parameters": data,
-            });
-          },
+          onPressed: _idLoading.values.any((element) => element == true)
+              ? null
+              : () {
+                  final Map<String, String> data = _controllers.map((
+                    key,
+                    value,
+                  ) {
+                    return MapEntry(key, value.toString());
+                  });
+                  Navigator.pop(widget.dialogContext, {
+                    "name": robot.name,
+                    "parameters": data,
+                  });
+                },
+          child: _idLoading.values.any((element) => element == true)
+              ? const Text('Waiting...')
+              : const Text('Run'),
         ),
       ],
     );
