@@ -62,19 +62,19 @@ class Header extends StatelessWidget {
             ],
           ),
           Spacer(),
-          FilledButton(
-            onPressed: () {},
-            child: Row(
-              spacing: 10,
-              children: [
-                Icon(FluentIcons.signin, size: 16),
-                Text(
-                  "Log In",
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ],
-            ),
-          ),
+          // FilledButton(
+          //   onPressed: () {},
+          //   child: Row(
+          //     spacing: 10,
+          //     children: [
+          //       Icon(FluentIcons.signin, size: 16),
+          //       Text(
+          //         "Log In",
+          //         style: const TextStyle(fontWeight: FontWeight.w600),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );
