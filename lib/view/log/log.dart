@@ -9,6 +9,7 @@ import 'package:task_distribution/core/widget/run_status_badge.dart';
 import 'package:task_distribution/main.dart';
 import 'package:task_distribution/model/log.dart';
 import 'package:task_distribution/model/run.dart';
+import 'package:task_distribution/model/run_error.dart';
 import 'package:task_distribution/provider/run/run.dart';
 import 'package:task_distribution/provider/run/run_filter.dart'; // Import quan trọng
 import "package:task_distribution/provider/socket.dart";
@@ -31,8 +32,6 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
   @override
   void initState() {
     super.initState();
-    // 1. LOGIC TỰ ĐỘNG LOAD:
-    // Lấy ID đang được chọn trong Provider (do trang Runs gửi sang)
     final providerId = context.read<RunFilterProvider>().selectedId;
     if (providerId != null) {
       _currentLoadedId = providerId;
@@ -90,6 +89,10 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
         );
       }
     });
+  }
+
+  Future<RError?> _getRError(BuildContext context, String runId) async {
+    return await context.read<RunProvider>().getError(runId);
   }
 
   @override
@@ -302,7 +305,7 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
           const Divider(),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 50,
+            spacing: 25,
             children: [
               _buildInfoItem("Robot Name", run.robot, FluentIcons.robot),
               _buildInfoItem(
@@ -362,9 +365,10 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
         children: [
           SizedBox(width: 180, child: Text("TIMESTAMP", style: style)),
           SizedBox(width: 100, child: Text("LEVEL", style: style)),
-          Expanded(child: Text("MESSAGE", style: style)),
+          SizedBox(width: 100, child: Text("MESSAGE", style: style)),
+          Spacer(),
           SizedBox(
-            width: 125,
+            width: 105,
             child: run == null
                 ? null
                 : run.status == "PENDING" || run.status == "WAITING"
@@ -372,30 +376,151 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
                     onPressed: () {
                       context.read<RunProvider>().stop(run);
                     },
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                        Color(0xFFD32F2F),
-                      ),
-                    ),
                     child: Row(
-                      spacing: 10,
+                      spacing: 5,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(FluentIcons.pause, size: 16),
+                        Icon(FluentIcons.pause, size: 12),
                         Text("Stop"),
                       ],
                     ),
                   )
-                : FilledButton(
+                : run.status != "FAILURE"
+                ? FilledButton(
                     onPressed: () {
                       context.read<RunProvider>().download(run);
                     },
                     child: Row(
-                      spacing: 10,
+                      spacing: 5,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(FluentIcons.download, size: 16),
+                        Icon(FluentIcons.download, size: 12),
                         Text("Download"),
+                      ],
+                    ),
+                  )
+                : FilledButton(
+                    onPressed: () async {
+                      // ... Bên trong hàm hiển thị dialog của bạn
+                      await showDialog(
+                        context: context,
+                        builder: (context) => FutureBuilder<RError?>(
+                          future: _getRError(context, run.id),
+                          builder: (context, snapshot) {
+                            // 1. Trạng thái Loading
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const ContentDialog(
+                                title: Text("Loading..."),
+                                content: SizedBox(
+                                  height: 50,
+                                  child: Center(
+                                    child: ProgressRing(),
+                                  ), // Dùng ProgressRing thay vì ProgressBar
+                                ),
+                              );
+                            }
+
+                            // 2. Trạng thái Lỗi khi gọi API
+                            if (snapshot.hasError || snapshot.data == null) {
+                              return ContentDialog(
+                                title: const Text("Error"),
+                                content: Text(
+                                  'Could not load details: ${snapshot.error ?? "Data is null"}',
+                                ),
+                                actions: [
+                                  Button(
+                                    child: const Text('Close'),
+                                    onPressed: () => Navigator.pop(context),
+                                  ),
+                                ],
+                              );
+                            }
+                            final error = snapshot.data!;
+                            return ContentDialog(
+                              title: Text(
+                                error.errorType,
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              content: Column(
+                                spacing: 10,
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "Message:",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                      top: 4,
+                                      bottom: 12,
+                                    ),
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.withValues(
+                                        alpha: 0.1,
+                                      ), // Nền đỏ nhạt cảnh báo
+                                      borderRadius: BorderRadius.circular(4),
+                                      border: Border.all(
+                                        color: Colors.red.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                      ),
+                                    ),
+                                    child: SelectableText(
+                                      error.message,
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
+                                  ),
+                                  const Text(
+                                    "Traceback:",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: TextBox(
+                                      readOnly: true,
+                                      maxLines: null,
+                                      expands: true,
+                                      highlightColor: Colors.red,
+                                      controller: TextEditingController(
+                                        text: error.traceback,
+                                      ),
+                                      style: const TextStyle(
+                                        fontFamily: 'Consolas',
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              constraints: const BoxConstraints(maxWidth: 500),
+                              actions: [
+                                Button(
+                                  child: const Text('Close'),
+                                  onPressed: () => Navigator.pop(context),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(
+                        Color.fromARGB(255, 214, 78, 78),
+                      ),
+                    ),
+                    child: Row(
+                      spacing: 5,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(FluentIcons.error, size: 12),
+                        Text("Error"),
                       ],
                     ),
                   ),
@@ -439,7 +564,6 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
             ),
           ),
           Expanded(child: SelectableText(log.message, style: monoStyle)),
-          const SizedBox(width: 100),
         ],
       ),
     );

@@ -298,9 +298,9 @@ class _RunsPageState extends State<RunsPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          SizedBox(width: 300, child: Text("ID", style: headerStyle)),
+          SizedBox(width: 350, child: Text("ID", style: headerStyle)),
           Expanded(child: Text("ROBOT NAME", style: headerStyle)),
-          SizedBox(width: 120, child: Text("STATUS", style: headerStyle)),
+          SizedBox(width: 150, child: Text("STATUS", style: headerStyle)),
           SizedBox(
             width: 200,
             child: Row(
@@ -332,7 +332,7 @@ class _RunsPageState extends State<RunsPage> {
       child: Row(
         children: [
           SizedBox(
-            width: 300,
+            width: 350,
             child: SelectableText(
               run.id,
               style: const TextStyle(fontWeight: FontWeight.w600),
@@ -346,7 +346,7 @@ class _RunsPageState extends State<RunsPage> {
             ),
           ),
           SizedBox(
-            width: 120,
+            width: 150,
             child: Align(
               alignment: Alignment.centerLeft,
               child: RunStatusBadge(run: run),
@@ -357,8 +357,10 @@ class _RunsPageState extends State<RunsPage> {
             child: Text(
               run.createdAt.toString().split('.')[0],
               style: TextStyle(
+                fontFamily: 'Consolas',
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
                 color: theme.resources.textFillColorSecondary,
-                fontSize: 13,
               ),
             ),
           ),

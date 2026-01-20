@@ -3,6 +3,7 @@ import 'package:path/path.dart' as p;
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:task_distribution/model/api_response.dart';
+import 'package:task_distribution/model/run_error.dart';
 import 'package:task_distribution/model/run.dart';
 
 class RunClient {
@@ -27,20 +28,20 @@ class RunClient {
     return apiResponse.data ?? [];
   }
 
-  // Future<Run?> getRun(String id) async {
-  //   final url = Uri.parse("$backend/api/runs/$id");
-  //   final response = await http.get(url);
-  //   if (response.statusCode != 200) {
-  //     return null;
-  //   }
-  //   final Map<String, dynamic> responseJson = jsonDecode(response.body);
+  Future<RError?> getError(String id) async {
+    final url = Uri.parse("$backend/api/runs/$id/error");
+    final response = await http.get(url);
+    if (response.statusCode != 200) {
+      return null;
+    }
+    final Map<String, dynamic> responseJson = jsonDecode(response.body);
 
-  //   final apiResponse = APIResponse<Run>.fromJson(
-  //     responseJson,
-  //     (data) => Run.fromJson(data as Map<String, dynamic>),
-  //   );
-  //   return apiResponse.data;
-  // }
+    final apiResponse = APIResponse<RError>.fromJson(
+      responseJson,
+      (data) => RError.fromJson(data as Map<String, dynamic>),
+    );
+    return apiResponse.data;
+  }
 
   Future<bool> downloadResult({
     required Run run,

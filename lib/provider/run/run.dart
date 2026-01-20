@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:open_file/open_file.dart';
 import 'package:task_distribution/model/run.dart';
+import 'package:task_distribution/model/run_error.dart';
 import 'package:task_distribution/provider/socket.dart';
 import 'package:task_distribution/service/run.dart';
 
@@ -68,5 +69,9 @@ class RunProvider extends ChangeNotifier {
       return;
     }
     server.notification("Đã gửi yêu cầu dừng ${run.robot}");
+  }
+
+  Future<RError?> getError(String id) async {
+    return await repository.getError(id);
   }
 }
