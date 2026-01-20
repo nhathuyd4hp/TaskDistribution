@@ -51,6 +51,21 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           asset_name: setup.exe
           file: Output/setup.exe
-          tag: ${{ github.ref }}
           overwrite: true
-          body: "Robot Automation (Setup)"
+          tag: ${{ github.ref_name }}
+          body: |
+            ## 🚀 Phiên bản ${{ github.ref_name }}
+            
+            Đây là bản cập nhật mới nhất của phần mềm **Robot Automation**.
+            
+            ### 📦 Hướng dẫn cài đặt
+            1. Tải file setup **.exe** ở phần **Assets** bên dưới.
+            2. Chạy file cài đặt.
+            3. Phần mềm sẽ tự động kiểm tra và cài đặt **Visual C++ Redistributable** nếu máy bạn chưa có.
+            
+            ### 📋 Yêu cầu hệ thống
+            * Hệ điều hành: Windows 10/11 (x64)
+            * Kết nối Internet: Cần thiết để tải tài nguyên lần đầu.
+            
+            ---
+            *Bản build tự động từ hệ thống GitHub Actions.*
