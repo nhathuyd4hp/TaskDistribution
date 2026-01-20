@@ -46,8 +46,12 @@ jobs:
         run: iscc "setup.iss"
 
       - name: Release to GitHub
-        uses: softprops/action-gh-release@v1
+        uses: svenstaro/upload-release-action@v2
         with:
-          files: Output/*.exe
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          asset_name: setup
+          file: Output/setup.exe
+          overwrite: true
+          body: "Robot Automation (Setup)"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
