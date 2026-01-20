@@ -91,6 +91,10 @@ class ServerProvider extends ChangeNotifier {
     await _connect(url);
   }
 
+  void reload() {
+    notifyListeners();
+  }
+
   // Bắn thông báo
   void notification(String message, {VoidCallback? callBack}) {
     _latestMessage = message;
