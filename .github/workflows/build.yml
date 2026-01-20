@@ -69,7 +69,7 @@ jobs:
             
             ---
             *Bản build tự động từ hệ thống GitHub Actions.*
-  build-linux-deb:
+  build-linux-installer:
     runs-on: ubuntu-22.04
 
 
@@ -104,7 +104,7 @@ jobs:
       # ====== Tạo cấu trúc Debian ======
       - name: Prepare deb package structure
         run: |
-          APP_NAME="robot-automation"
+          APP_NAME="task_distribution"
           VERSION="${GITHUB_REF_NAME#v}"
           ARCH="amd64"
 
@@ -125,23 +125,19 @@ jobs:
           Priority: optional
           Architecture: $ARCH
           Maintainer: Your Name <you@example.com>
-          Description: Robot Automation (Flutter Desktop)
+          Description: Task Distribution (Flutter Desktop)
           EOF
 
           # desktop entry
           cat > deb_pkg/usr/share/applications/$APP_NAME.desktop <<EOF
           [Desktop Entry]
-          Name=Robot Automation
+          Name=Task Distribution
           Exec=/usr/local/bin/$APP_NAME
           Icon=$APP_NAME
           Type=Application
           Categories=Utility;
           EOF
 
-          # icon (nếu có)
-          if [ -f assets/icon.png ]; then
-            cp assets/icon.png deb_pkg/usr/share/icons/hicolor/256x256/apps/$APP_NAME.png
-          fi
 
       - name: Build .deb
         run: |
