@@ -49,7 +49,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          asset_name: setup
+          asset_name: setup.exe
           file: Output/setup.exe
           tag: ${{ github.ref }}
           overwrite: true
