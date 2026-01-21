@@ -31,11 +31,15 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
+; 1. Cài đặt VC++ Redistributable (Rất quan trọng cho Flutter Windows)
 Source: "VC_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
-
-
+; 2. File thực thi chính (.exe)
 Source: "{#SourcePath}\build\windows\x64\runner\Release\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourcePath}\build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; 3. Các file DLL lõi và các DLL của Plugin (Chỉ lấy file .dll)
+Source: "{#SourcePath}\build\windows\x64\runner\Release\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+; 4. Thư mục DATA (Chứa assets và mã máy) - BẮT BUỘC
+Source: "{#SourcePath}\build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
+
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue

@@ -30,7 +30,7 @@ jobs:
         run: flutter pub get
 
       - name: Build Windows
-        run: flutter build windows --release --dart-define=domain=${{ secrets.DOMAIN }} --dart-define=https=true
+        run: flutter build windows --release --dart-define=domain=${{ secrets.DOMAIN }} --dart-define=https=true --obfuscate --split-debug-info=build/windows/debug_info
 
       # Cài Inno Setup
       - name: Install Inno Setup
