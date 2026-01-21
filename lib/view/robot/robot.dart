@@ -1,7 +1,7 @@
 import "dart:math"; // Để dùng hàm min/max
 import "package:fluent_ui/fluent_ui.dart";
 import "package:provider/provider.dart";
-import "package:task_distribution/core/widget/empty_state.dart";
+import "package:task_distribution/shared/widgets/empty_state.dart";
 import "package:task_distribution/provider/robot/robot_filter.dart";
 import "package:task_distribution/view/robot/widgets/run_form.dart";
 import "package:task_distribution/view/robot/widgets/schedule_form.dart";

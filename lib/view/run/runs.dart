@@ -1,8 +1,8 @@
 import "dart:math"; // Import để tính toán phân trang
 import "package:fluent_ui/fluent_ui.dart";
 import "package:provider/provider.dart";
-import "package:task_distribution/core/widget/empty_state.dart";
-import "package:task_distribution/core/widget/run_status_badge.dart";
+import "package:task_distribution/shared/widgets/empty_state.dart";
+import "package:task_distribution/shared/widgets/run_status_badge.dart";
 import "package:task_distribution/provider/page.dart";
 import "package:task_distribution/provider/run/run_filter.dart";
 import "package:task_distribution/model/run.dart";

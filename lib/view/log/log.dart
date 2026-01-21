@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:task_distribution/core/widget/log_badge.dart';
-import 'package:task_distribution/core/widget/run_status_badge.dart';
+import 'package:task_distribution/shared/widgets/log_badge.dart';
+import 'package:task_distribution/shared/widgets/run_status_badge.dart';
 import 'package:task_distribution/main.dart';
 import 'package:task_distribution/model/log.dart';
 import 'package:task_distribution/model/run.dart';
@@ -304,9 +304,9 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
           const Divider(),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 25,
+            spacing: 50,
             children: [
-              _buildInfoItem("Robot Name", run.robot, FluentIcons.robot),
+              _buildInfoItem("Robot", run.robot, FluentIcons.robot),
               _buildInfoItem(
                 "Started At",
                 run.createdAt.toString().split('.')[0],
@@ -323,7 +323,7 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
                 "Result",
                 run.status == "SUCCESS"
                     ? (run.result != null ? p.basename(run.result!) : "")
-                    : (run.result ?? ""),
+                    : "",
                 FluentIcons.doc_library,
               ),
             ],
