@@ -1,7 +1,7 @@
-import "dart:math"; // Import để tính toán phân trang
+import "dart:math";
 import "package:fluent_ui/fluent_ui.dart";
+import "package:lottie/lottie.dart";
 import "package:provider/provider.dart";
-import "package:task_distribution/shared/widgets/empty_state.dart";
 import "package:task_distribution/shared/widgets/run_status_badge.dart";
 import "package:task_distribution/provider/page.dart";
 import "package:task_distribution/provider/run/run_filter.dart";
@@ -176,7 +176,13 @@ class _RunsPageState extends State<RunsPage> {
                   // Hiển thị danh sách PAGINATED (chỉ 10 item)
                   Expanded(
                     child: paginatedList.isEmpty
-                        ? const EmptyState()
+                        ? Center(
+                            child: Lottie.asset(
+                              'assets/lottie/NoData.json',
+                              width: 250,
+                              height: 250,
+                            ),
+                          )
                         : ListView.separated(
                             itemCount: paginatedList.length,
                             separatorBuilder: (ctx, i) => const Divider(),

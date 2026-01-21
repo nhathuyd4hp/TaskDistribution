@@ -1,6 +1,6 @@
 import "package:fluent_ui/fluent_ui.dart";
+import "package:lottie/lottie.dart";
 import "package:provider/provider.dart";
-import "package:task_distribution/shared/widgets/empty_state.dart";
 import "package:task_distribution/model/schedule.dart";
 import "package:task_distribution/provider/schedule/schedule.dart";
 import "package:task_distribution/provider/socket.dart";
@@ -115,7 +115,13 @@ class _SchedulePageState extends State<SchedulePage> {
                           const Divider(),
                           Expanded(
                             child: filtered.isEmpty
-                                ? EmptyState()
+                                ? Center(
+                                    child: Lottie.asset(
+                                      'assets/lottie/NoData.json',
+                                      width: 250,
+                                      height: 250,
+                                    ),
+                                  )
                                 : ListView.separated(
                                     itemCount: filtered.length,
                                     separatorBuilder: (ctx, i) =>

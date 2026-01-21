@@ -1,7 +1,7 @@
-import "dart:math"; // Để dùng hàm min/max
+import "dart:math";
 import "package:fluent_ui/fluent_ui.dart";
+import "package:lottie/lottie.dart";
 import "package:provider/provider.dart";
-import "package:task_distribution/shared/widgets/empty_state.dart";
 import "package:task_distribution/provider/robot/robot_filter.dart";
 import "package:task_distribution/view/robot/widgets/run_form.dart";
 import "package:task_distribution/view/robot/widgets/schedule_form.dart";
@@ -143,7 +143,13 @@ class _RobotPageState extends State<RobotPage> {
                   // Hiển thị danh sách đã cắt trang (paginatedList)
                   Expanded(
                     child: paginatedList.isEmpty
-                        ? const EmptyState()
+                        ? Center(
+                            child: Lottie.asset(
+                              'assets/lottie/NoData.json',
+                              width: 250,
+                              height: 250,
+                            ),
+                          )
                         : ListView.separated(
                             itemCount: paginatedList.length,
                             separatorBuilder: (ctx, i) => const Divider(),
