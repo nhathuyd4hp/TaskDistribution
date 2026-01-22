@@ -52,7 +52,6 @@ jobs:
           asset_name: setup.exe
           file: Output/setup.exe
           overwrite: true
-          tag: ${{ github.ref_name }}
           body: |
             ## 🚀 Phiên bản ${{ github.ref_name }}
             
