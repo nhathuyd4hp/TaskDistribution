@@ -278,11 +278,7 @@ class _RobotPageState extends State<RobotPage> {
         children: [
           Expanded(child: Text("ROBOT", style: headerStyle)),
           SizedBox(width: 100, child: Text("STATUS", style: headerStyle)),
-          Container(
-            width: 220,
-            alignment: Alignment.centerRight,
-            child: Text("ACTION", style: headerStyle),
-          ),
+          SizedBox(width: 200, child: Text("ACTION", style: headerStyle)),
         ],
       ),
     );
@@ -342,10 +338,10 @@ class _RobotPageState extends State<RobotPage> {
             ),
           ),
           SizedBox(
-            width: 220,
+            width: 200,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              spacing: 10,
+              mainAxisAlignment: MainAxisAlignment.start,
+              spacing: 25,
               children: [
                 FilledButton(
                   onPressed: () => _handleRun(context, robot),

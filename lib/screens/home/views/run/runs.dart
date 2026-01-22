@@ -176,7 +176,7 @@ class _RunsPageState extends State<RunsPage> {
                 children: [
                   _buildTableHeader(theme),
                   const Divider(),
-                  // Hiển thị danh sách PAGINATED (chỉ 10 item)
+                  // Hiển thị danh sách PAGINATED
                   Expanded(
                     child: paginatedList.isEmpty
                         ? Center(
@@ -198,7 +198,6 @@ class _RunsPageState extends State<RunsPage> {
                             },
                           ),
                   ),
-                  // Footer Pagination: Truyền vào TỔNG SỐ item
                   _buildPaginationFooter(
                     context,
                     theme,
@@ -214,14 +213,12 @@ class _RunsPageState extends State<RunsPage> {
     );
   }
 
-  // --- FOOTER PHÂN TRANG (MỚI) ---
   Widget _buildPaginationFooter(
     BuildContext context,
     FluentThemeData theme,
     RunFilterProvider provider,
     int totalItems,
   ) {
-    // Tính toán số liệu hiển thị
     final totalPages = (totalItems / provider.itemsPerPage).ceil();
     final currentPage = totalPages > 0
         ? min(provider.currentPage, totalPages)
@@ -247,6 +244,7 @@ class _RunsPageState extends State<RunsPage> {
           ComboBox<int>(
             value: provider.itemsPerPage,
             items: const [
+              ComboBoxItem(value: 5, child: Text("5")),
               ComboBoxItem(value: 10, child: Text("10")),
               ComboBoxItem(value: 20, child: Text("20")),
               ComboBoxItem(value: 30, child: Text("30")),
@@ -258,22 +256,17 @@ class _RunsPageState extends State<RunsPage> {
           ),
 
           const Spacer(),
-
-          // 2. Hiển thị Range (1-10 of 50)
           Text(
             "$startItem-$endItem of $totalItems items",
             style: theme.typography.caption,
           ),
           const SizedBox(width: 16),
-
-          // 3. Nút Previous
           IconButton(
             icon: const Icon(FluentIcons.chevron_left, size: 12),
             onPressed: currentPage > 1
                 ? () => provider.setPage(currentPage - 1)
                 : null,
           ),
-
           // 4. Số trang
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -282,7 +275,6 @@ class _RunsPageState extends State<RunsPage> {
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-
           // 5. Nút Next
           IconButton(
             icon: const Icon(FluentIcons.chevron_right, size: 12),
@@ -306,7 +298,7 @@ class _RunsPageState extends State<RunsPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          SizedBox(width: 300, child: Text("ID", style: headerStyle)),
+          SizedBox(width: 280, child: Text("ID", style: headerStyle)),
           Expanded(child: Text("ROBOT", style: headerStyle)),
           SizedBox(width: 150, child: Text("STATUS", style: headerStyle)),
           SizedBox(
@@ -340,7 +332,7 @@ class _RunsPageState extends State<RunsPage> {
       child: Row(
         children: [
           SizedBox(
-            width: 300,
+            width: 280,
             child: SelectableText(
               run.id,
               style: const TextStyle(fontWeight: FontWeight.w600),
@@ -376,7 +368,11 @@ class _RunsPageState extends State<RunsPage> {
             width: 80,
             alignment: Alignment.centerRight,
             child: IconButton(
-              icon: Icon(FluentIcons.info, color: theme.accentColor, size: 16),
+              icon: Icon(
+                FluentIcons.documentation,
+                color: theme.accentColor,
+                size: 16,
+              ),
               onPressed: () {
                 context.read<RunFilterProvider>().setSelectedId(run.id);
                 context.read<PageProvider>().setPage(AppPage.log);

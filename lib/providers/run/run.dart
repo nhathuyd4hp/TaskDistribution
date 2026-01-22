@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:open_file/open_file.dart';
+import 'package:path/path.dart' as p;
 import 'package:task_distribution/data/model/run.dart';
 import 'package:task_distribution/data/model/run_error.dart';
 import 'package:task_distribution/providers/socket.dart';
@@ -42,10 +43,11 @@ class RunProvider extends ChangeNotifier {
     );
     if (!success) return server.notification("Lưu thất bại!");
     server.notification(
-      "Lưu thành công",
+      "Lưu ${p.basename(run.result!)} thành công",
       callBack: () async {
         await OpenFile.open(directoryPath);
       },
+      note: "Xem",
     );
   }
 

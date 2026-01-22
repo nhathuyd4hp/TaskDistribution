@@ -18,6 +18,13 @@ class ServerProvider extends ChangeNotifier {
   // callBack message
   VoidCallback? _callBack;
   VoidCallback? get callBack => _callBack;
+  // callBack note
+  String? _note;
+  String? get note => _note;
+
+  void clearNote() {
+    _note = null;
+  }
 
   void clearCallBack() {
     _callBack = null;
@@ -96,9 +103,10 @@ class ServerProvider extends ChangeNotifier {
   }
 
   // Bắn thông báo
-  void notification(String message, {VoidCallback? callBack}) {
+  void notification(String message, {VoidCallback? callBack, String? note}) {
     _latestMessage = message;
     _callBack = callBack;
+    _note = note;
     notifyListeners();
   }
 }

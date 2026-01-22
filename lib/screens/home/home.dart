@@ -41,14 +41,16 @@ class _HomeState extends State<Home> {
     if (server.errorMessage != null) {
       final msg = server.errorMessage!;
       final callback = server.callBack;
+      final note = server.note;
       if (msg.toLowerCase().contains(
         "WebSocketChannelException".toLowerCase(),
       )) {
         _showInfoBar(msg, InfoBarSeverity.error);
       } else {
-        _showLocalNotification("Thông báo", msg, callback);
+        _showLocalNotification("Thông báo", msg, callback, note);
       }
 
+      server.clearNote();
       server.clearCallBack();
       server.clearErrorMessage();
     }
@@ -57,8 +59,10 @@ class _HomeState extends State<Home> {
     if (server.latestMessage != null) {
       final msg = server.latestMessage!;
       final callback = server.callBack;
-      _showLocalNotification("Thông báo", msg, callback);
+      final note = server.note;
+      _showLocalNotification("Thông báo", msg, callback, note);
 
+      server.clearNote();
       server.clearCallBack();
       server.clearLatestMessage();
     }
@@ -68,6 +72,7 @@ class _HomeState extends State<Home> {
     String title,
     String body,
     VoidCallback? callBack,
+    String? note,
   ) {
     final noti = LocalNotification(
       identifier: DateTime.now().toString(),
@@ -75,13 +80,14 @@ class _HomeState extends State<Home> {
       body: body,
       actions: [
         LocalNotificationAction(text: 'Đóng'),
-        if (callBack != null) LocalNotificationAction(text: 'Chi tiết'),
+        if (callBack != null) LocalNotificationAction(text: note ?? "Chi tiết"),
       ],
     );
     noti.onClickAction = (actionIndex) {
       if (actionIndex == 1 && callBack != null) {
-        callBack();
+        return callBack();
       }
+      noti.close();
     };
     noti.show();
   }
