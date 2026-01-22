@@ -290,11 +290,11 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
           const Divider(),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 25,
+            spacing: 20,
             children: [
               _buildInfoItem("Robot", run.robot, FluentIcons.robot),
               _buildInfoItem(
-                "Started At",
+                "Run At",
                 run.createdAt.toString().split('.')[0],
                 FluentIcons.clock,
               ),
@@ -305,13 +305,16 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
                     : "",
                 FluentIcons.variable,
               ),
-              _buildInfoItem(
-                "Result",
-                run.status == "SUCCESS"
-                    ? (run.result != null ? p.basename(run.result!) : "")
-                    : "",
-                FluentIcons.file_system,
-              ),
+              if (run.status == "SUCCESS" &&
+                  run.result != null &&
+                  run.result != "")
+                Expanded(
+                  child: _buildInfoItem(
+                    "Result",
+                    p.basename(run.result!),
+                    FluentIcons.file_system,
+                  ),
+                ),
             ],
           ),
         ],
@@ -331,7 +334,12 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
               label,
               style: TextStyle(fontSize: 12, color: Colors.grey[100]),
             ),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
+            Text(
+              value,
+              maxLines: 1,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
         ),
       ],
