@@ -1,17 +1,17 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:task_distribution/provider/robot/robot_filter.dart';
-import 'package:task_distribution/provider/run/run.dart';
-import 'package:task_distribution/provider/run/run_filter.dart';
-import 'package:task_distribution/provider/schedule/schedule.dart';
-import 'package:task_distribution/screen/home.dart';
-import 'package:task_distribution/service/robot.dart';
-import 'package:task_distribution/provider/page.dart';
-import 'package:task_distribution/provider/robot/robot.dart';
-import 'package:task_distribution/provider/socket.dart';
-import 'package:task_distribution/service/run.dart';
-import 'package:task_distribution/service/schedule.dart';
+import 'package:task_distribution/providers/robot/robot_filter.dart';
+import 'package:task_distribution/providers/run/run.dart';
+import 'package:task_distribution/providers/run/run_filter.dart';
+import 'package:task_distribution/providers/schedule/schedule.dart';
+import 'package:task_distribution/screens/home/home.dart';
+import 'package:task_distribution/data/services/robot.dart';
+import 'package:task_distribution/providers/page.dart';
+import 'package:task_distribution/providers/robot/robot.dart';
+import 'package:task_distribution/providers/socket.dart';
+import 'package:task_distribution/data/services/run.dart';
+import 'package:task_distribution/data/services/schedule.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
@@ -55,14 +55,11 @@ class RobotAutomation extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Navigation State
         ChangeNotifierProvider(create: (_) => PageProvider()),
-        // Server State
         ChangeNotifierProvider(
           lazy: false,
           create: (_) => ServerProvider(wsUrl),
         ),
-        // Data State
         ChangeNotifierProxyProvider<ServerProvider, RobotProvider>(
           create: (BuildContext context) => RobotProvider(
             repository: RobotClient(backendUrl),
@@ -93,7 +90,6 @@ class RobotAutomation extends StatelessWidget {
             return scheduleProvider;
           },
         ),
-        // Filter State
         ChangeNotifierProvider(create: (_) => RobotFilterProvider()),
         ChangeNotifierProvider(create: (_) => RunFilterProvider()),
       ],
@@ -101,6 +97,7 @@ class RobotAutomation extends StatelessWidget {
         title: "Robot Automation",
         debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.system,
+        // --- LIGHT THEME ---
         theme: FluentThemeData(
           accentColor: Colors.teal,
           brightness: Brightness.light,
@@ -109,7 +106,6 @@ class RobotAutomation extends StatelessWidget {
             glowFactor: is10footScreen(context) ? 2.0 : 0.0,
           ),
         ),
-
         // --- DARK THEME ---
         darkTheme: FluentThemeData(
           accentColor: Colors.teal,
