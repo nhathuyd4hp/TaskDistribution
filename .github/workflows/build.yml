@@ -53,7 +53,6 @@ jobs:
           asset_name: robot_${{ github.ref_name }}.exe
           file: Output/setup.exe
           tag: ${{ github.ref_name }}
-          overwrite: true
           body: |
             ## 🚀 Phiên bản ${{ github.ref_name }}
             
