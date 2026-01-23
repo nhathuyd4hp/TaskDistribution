@@ -122,7 +122,7 @@ class _SchedulePageState extends State<SchedulePage> {
                             child: filtered.isEmpty
                                 ? Center(
                                     child: Lottie.asset(
-                                      'assets/lottie/NoData.json',
+                                      'assets/lottie/Loading.json',
                                       width: 250,
                                       height: 250,
                                     ),

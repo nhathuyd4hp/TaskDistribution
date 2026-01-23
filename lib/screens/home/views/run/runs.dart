@@ -184,7 +184,7 @@ class _RunsPageState extends State<RunsPage> {
                     child: paginatedList.isEmpty
                         ? Center(
                             child: Lottie.asset(
-                              'assets/lottie/NoData.json',
+                              'assets/lottie/Loading.json',
                               width: 250,
                               height: 250,
                             ),
