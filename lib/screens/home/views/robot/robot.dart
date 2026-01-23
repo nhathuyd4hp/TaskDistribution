@@ -105,7 +105,7 @@ class _RobotPageState extends State<RobotPage> {
                       const SizedBox(height: 12),
                       Text(
                         "Connecting to server...",
-                        style: theme.typography.body,
+                        style: theme.typography.bodyStrong,
                       ),
                     ],
                   ),
@@ -124,7 +124,10 @@ class _RobotPageState extends State<RobotPage> {
                       const SizedBox(height: 16),
                       Text("Disconnected", style: theme.typography.title),
                       const SizedBox(height: 8),
-                      Text(server.errorMessage ?? "Lost connection to server"),
+                      Text(
+                        server.errorMessage ?? "Lost connection to server",
+                        style: theme.typography.bodyStrong,
+                      ),
                     ],
                   ),
                 );

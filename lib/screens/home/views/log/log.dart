@@ -183,7 +183,7 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
                                         const SizedBox(height: 12),
                                         Text(
                                           "Connecting to server...",
-                                          style: theme.typography.body,
+                                          style: theme.typography.bodyStrong,
                                         ),
                                       ],
                                     )
@@ -206,6 +206,7 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
                                         Text(
                                           server.errorMessage ??
                                               "Lost connection to server",
+                                          style: theme.typography.bodyStrong,
                                         ),
                                       ],
                                     ),
@@ -408,6 +409,7 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
                                 id: run.id,
                                 runId: run.id,
                                 createdAt: DateTime.now(),
+                                updatedAt: DateTime.now(),
                                 errorType: "Error",
                                 message: run.result ?? "",
                                 traceback: run.result ?? "",

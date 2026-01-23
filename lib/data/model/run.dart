@@ -26,9 +26,9 @@ class Run {
       status: json['status'] as String,
       parameters: json['parameters'] as String?,
       result: json['result'] as String?,
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt: DateTime.parse(json['created_at']).toLocal(),
       updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
+          ? DateTime.parse(json['updated_at']).toLocal()
           : null,
     );
   }

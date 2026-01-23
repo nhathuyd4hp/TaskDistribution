@@ -24,10 +24,10 @@ class Schedule {
           ? DateTime.parse(json['next_run_time']).toLocal()
           : null,
       startDate: json['start_date'] != null
-          ? DateTime.parse(json['start_date'])
+          ? DateTime.parse(json['start_date']).toLocal()
           : null,
       endDate: json['end_date'] != null
-          ? DateTime.parse(json['end_date'])
+          ? DateTime.parse(json['end_date']).toLocal()
           : null,
     );
   }

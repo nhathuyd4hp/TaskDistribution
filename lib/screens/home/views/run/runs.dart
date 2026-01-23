@@ -140,7 +140,7 @@ class _RunsPageState extends State<RunsPage> {
                       const SizedBox(height: 12),
                       Text(
                         "Connecting to server...",
-                        style: theme.typography.body,
+                        style: theme.typography.bodyStrong,
                       ),
                     ],
                   ),
@@ -159,7 +159,10 @@ class _RunsPageState extends State<RunsPage> {
                       const SizedBox(height: 16),
                       Text("Disconnected", style: theme.typography.title),
                       const SizedBox(height: 8),
-                      Text(server.errorMessage ?? "Lost connection to server"),
+                      Text(
+                        server.errorMessage ?? "Lost connection to server",
+                        style: theme.typography.bodyStrong,
+                      ),
                     ],
                   ),
                 );
@@ -244,8 +247,8 @@ class _RunsPageState extends State<RunsPage> {
           ComboBox<int>(
             value: provider.itemsPerPage,
             items: const [
-              ComboBoxItem(value: 5, child: Text("5")),
               ComboBoxItem(value: 10, child: Text("10")),
+              ComboBoxItem(value: 15, child: Text("15")),
               ComboBoxItem(value: 20, child: Text("20")),
               ComboBoxItem(value: 30, child: Text("30")),
               ComboBoxItem(value: 50, child: Text("50")),
@@ -300,9 +303,9 @@ class _RunsPageState extends State<RunsPage> {
         children: [
           SizedBox(width: 280, child: Text("ID", style: headerStyle)),
           Expanded(child: Text("ROBOT", style: headerStyle)),
-          SizedBox(width: 150, child: Text("STATUS", style: headerStyle)),
+          SizedBox(width: 125, child: Text("STATUS", style: headerStyle)),
           SizedBox(
-            width: 200,
+            width: 175,
             child: Row(
               children: [
                 Text("RUN AT", style: headerStyle),
@@ -315,8 +318,22 @@ class _RunsPageState extends State<RunsPage> {
               ],
             ),
           ),
+          SizedBox(
+            width: 175,
+            child: Row(
+              children: [
+                Text("UPDATED AT", style: headerStyle),
+                const SizedBox(width: 4),
+                IconButton(
+                  icon: const Icon(FluentIcons.sort, size: 12),
+                  onPressed: () =>
+                      context.read<RunFilterProvider>().setIsAscending(),
+                ),
+              ],
+            ),
+          ),
           Container(
-            width: 80,
+            width: 50,
             alignment: Alignment.centerRight,
             child: Text("ACTION", style: headerStyle),
           ),
@@ -346,14 +363,14 @@ class _RunsPageState extends State<RunsPage> {
             ),
           ),
           SizedBox(
-            width: 150,
+            width: 125,
             child: Align(
               alignment: Alignment.centerLeft,
               child: RunStatusBadge(run: run),
             ),
           ),
           SizedBox(
-            width: 200,
+            width: 175,
             child: Text(
               run.createdAt.toString().split('.')[0],
               style: TextStyle(
@@ -364,8 +381,20 @@ class _RunsPageState extends State<RunsPage> {
               ),
             ),
           ),
+          SizedBox(
+            width: 175,
+            child: Text(
+              run.updatedAt.toString().split('.')[0],
+              style: TextStyle(
+                fontFamily: 'Consolas',
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: theme.resources.textFillColorSecondary,
+              ),
+            ),
+          ),
           Container(
-            width: 80,
+            width: 50,
             alignment: Alignment.centerRight,
             child: IconButton(
               icon: Icon(

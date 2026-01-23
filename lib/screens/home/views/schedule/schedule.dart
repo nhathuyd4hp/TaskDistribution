@@ -87,7 +87,7 @@ class _SchedulePageState extends State<SchedulePage> {
                             const SizedBox(height: 12),
                             Text(
                               "Connecting to server...",
-                              style: theme.typography.body,
+                              style: theme.typography.bodyStrong,
                             ),
                           ],
                         ),
@@ -108,6 +108,7 @@ class _SchedulePageState extends State<SchedulePage> {
                             Text(
                               server.errorMessage ??
                                   "Lost connection to server",
+                              style: theme.typography.bodyStrong,
                             ),
                           ],
                         ),
