@@ -103,7 +103,7 @@ class _HomeState extends State<Home> {
 
     return ScaffoldPage(
       padding: EdgeInsets.zero,
-      header: const Header(padding: padding),
+      header: const Header(),
       content: Container(
         padding: padding,
         margin: margin,

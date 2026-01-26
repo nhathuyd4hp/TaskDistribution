@@ -3,8 +3,7 @@ import "package:provider/provider.dart";
 import 'package:task_distribution/providers/page.dart';
 
 class Header extends StatelessWidget {
-  final EdgeInsets padding;
-  const Header({super.key, required this.padding});
+  const Header({super.key});
 
   @override
   Widget build(BuildContext context) {

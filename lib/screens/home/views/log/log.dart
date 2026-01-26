@@ -315,10 +315,33 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
                   run.result != null &&
                   run.result != "")
                 Expanded(
-                  child: _buildInfoItem(
-                    "Result",
-                    p.basename(run.result!),
-                    FluentIcons.file_system,
+                  child: Row(
+                    spacing: 8,
+                    children: [
+                      Icon(
+                        FluentIcons.file_system,
+                        size: 16,
+                        color: Colors.grey[100],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Result",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[100],
+                            ),
+                          ),
+                          Text(
+                            p.basename(run.result!),
+                            maxLines: 1,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
             ],
