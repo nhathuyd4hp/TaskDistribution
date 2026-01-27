@@ -2,9 +2,9 @@
 
 **RPAutomation** là ứng dụng desktop đa nền tảng (tập trung vào Windows/Linux) được xây dựng bằng **Flutter**. Ứng dụng đóng vai trò là trung tâm điều khiển (Control Center) giúp quản lý, giám sát và lập lịch cho các Robot RPA (Robotic Process Automation).
 
-![Project Status](https://img.shields.io/badge/Status-Development-blue)
+![Project Status](https://img.shields.io/badge/Status-Release-blue)
 ![Flutter](https://img.shields.io/badge/Flutter-3.0%2B-02569B)
-![Platform](https://img.shields.io/badge/Platform-Windows%20|%20Linux-lightgrey)
+![Platform](https://img.shields.io/badge/Platform-Windows-blue)
 
 ## 🌟 Tính năng chính
 
