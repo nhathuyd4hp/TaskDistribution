@@ -89,7 +89,6 @@ class _RobotPageState extends State<RobotPage> {
             ],
           ),
 
-          // --- LOGIC CHÍNH ---
           child: Consumer2<RobotProvider, RobotFilterProvider>(
             builder: (context, robotProvider, filterProvider, child) {
               if (server.status == ConnectionStatus.connecting) {
@@ -133,12 +132,10 @@ class _RobotPageState extends State<RobotPage> {
                 );
               }
 
-              // 1. Lọc dữ liệu gốc (Search/Filter) -> Ra danh sách đầy đủ
               final fullFilteredList = filterProvider.apply(
                 robotProvider.robots,
               );
 
-              // 2. Cắt trang (Pagination) -> Ra danh sách hiển thị
               final paginatedList = filterProvider.paginate(fullFilteredList);
 
               return Column(
@@ -147,7 +144,6 @@ class _RobotPageState extends State<RobotPage> {
                   _buildTableHeader(theme),
                   const Divider(),
 
-                  // Hiển thị danh sách đã cắt trang (paginatedList)
                   Expanded(
                     child: paginatedList.isEmpty
                         ? Center(
@@ -170,12 +166,11 @@ class _RobotPageState extends State<RobotPage> {
                           ),
                   ),
 
-                  // Footer điều khiển phân trang
                   _buildPaginationFooter(
                     context,
                     theme,
                     filterProvider,
-                    fullFilteredList.length, // Truyền tổng số lượng bản ghi
+                    fullFilteredList.length,
                   ),
                 ],
               );
@@ -186,21 +181,17 @@ class _RobotPageState extends State<RobotPage> {
     );
   }
 
-  // --- FOOTER PHÂN TRANG MỚI ---
   Widget _buildPaginationFooter(
     BuildContext context,
     FluentThemeData theme,
     RobotFilterProvider provider,
     int totalItems,
   ) {
-    // Tính tổng số trang
     final totalPages = (totalItems / provider.itemsPerPage).ceil();
-    // Đảm bảo trang hiện tại không vượt quá tổng số trang (tránh lỗi UI khi xóa item)
     final currentPage = totalPages > 0
         ? min(provider.currentPage, totalPages)
         : 1;
 
-    // Tính range đang hiển thị (Ví dụ: 1-10 of 50)
     final startItem = totalItems == 0
         ? 0
         : (currentPage - 1) * provider.itemsPerPage + 1;
@@ -239,15 +230,13 @@ class _RobotPageState extends State<RobotPage> {
           ),
           const SizedBox(width: 16),
 
-          // 3. Nút Previous
           IconButton(
             icon: const Icon(FluentIcons.chevron_left, size: 12),
             onPressed: currentPage > 1
                 ? () => provider.setPage(currentPage - 1)
-                : null, // Disable nếu ở trang 1
+                : null,
           ),
 
-          // 4. Text trang hiện tại
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
@@ -255,20 +244,17 @@ class _RobotPageState extends State<RobotPage> {
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-
-          // 5. Nút Next
           IconButton(
             icon: const Icon(FluentIcons.chevron_right, size: 12),
             onPressed: currentPage < totalPages
                 ? () => provider.setPage(currentPage + 1)
-                : null, // Disable nếu ở trang cuối
+                : null,
           ),
         ],
       ),
     );
   }
 
-  // --- Header Table (Giữ nguyên) ---
   Widget _buildTableHeader(FluentThemeData theme) {
     final headerStyle = TextStyle(
       fontSize: 12,
@@ -281,13 +267,12 @@ class _RobotPageState extends State<RobotPage> {
         children: [
           Expanded(child: Text("ROBOT", style: headerStyle)),
           SizedBox(width: 100, child: Text("STATUS", style: headerStyle)),
-          SizedBox(width: 200, child: Text("ACTION", style: headerStyle)),
+          SizedBox(width: 225, child: Text("ACTION", style: headerStyle)),
         ],
       ),
     );
   }
 
-  // --- Table Row (Giữ nguyên) ---
   Widget _buildTableRow(
     BuildContext context,
     Robot robot,
@@ -314,25 +299,22 @@ class _RobotPageState extends State<RobotPage> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  // 1. Màu nền thay đổi theo trạng thái
                   color: robot.active
-                      ? const Color(0xFFE8F5E9) // Xanh nhạt (Active)
-                      : const Color(0xFFFFEBEE), // Đỏ nhạt (Inactive)
+                      ? const Color(0xFFE8F5E9)
+                      : const Color(0xFFFFEBEE),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    // 2. Màu viền thay đổi theo trạng thái
                     color: robot.active
                         ? const Color(0xFF2E7D32).withValues(alpha: 0.2)
                         : const Color(0xFFC62828).withValues(alpha: 0.2),
                   ),
                 ),
                 child: Text(
-                  robot.active ? "Active" : "Inactive",
+                  robot.active ? " Active " : "Inactive",
                   style: TextStyle(
-                    // 3. Màu chữ thay đổi theo trạng thái
                     color: robot.active
-                        ? const Color(0xFF2E7D32) // Xanh đậm
-                        : const Color(0xFFC62828), // Đỏ đậm
+                        ? const Color(0xFF2E7D32)
+                        : const Color(0xFFC62828),
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -341,7 +323,7 @@ class _RobotPageState extends State<RobotPage> {
             ),
           ),
           SizedBox(
-            width: 200,
+            width: 225,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               spacing: 25,
