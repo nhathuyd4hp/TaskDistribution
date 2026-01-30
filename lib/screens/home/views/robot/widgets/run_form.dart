@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:http/http.dart' as http;
@@ -22,7 +21,7 @@ class _RunFormState extends State<RunForm> {
   late Future<Robot> _robotFuture;
 
   Widget _buildInput(Parameter parameter) {
-    if (parameter.annotation.toLowerCase().contains("datetime")) {
+    if (parameter.annotation.toLowerCase().contains("datetime.datetime")) {
       return DatePicker(
         selected: _controllers[parameter.name] ?? DateTime.now(),
         onChanged: (value) {
@@ -32,7 +31,7 @@ class _RunFormState extends State<RunForm> {
         },
       );
     }
-    if (parameter.annotation.toLowerCase().contains("literal")) {
+    if (parameter.annotation.toLowerCase().contains("typing.literal")) {
       final content = parameter.annotation.substring(
         parameter.annotation.indexOf('[') + 1,
         parameter.annotation.lastIndexOf(']'),
@@ -169,6 +168,7 @@ class _RunFormState extends State<RunForm> {
     }
     return TextBox(
       placeholder: parameter.name,
+      controller: TextEditingController(text: _controllers[parameter.name]),
       placeholderStyle: TextStyle(fontWeight: FontWeight.w500),
       style: TextStyle(fontWeight: FontWeight.w500),
       decoration: WidgetStatePropertyAll(
@@ -236,6 +236,7 @@ class _RunFormState extends State<RunForm> {
     super.initState();
     _robotFuture = _initRobotData();
     for (var p in widget.robot.parameters) {
+      // ------ //
       if (p.annotation.toLowerCase().contains("type.api")) {
         _idLoading[p.name] = true;
       } else {
@@ -243,12 +244,12 @@ class _RunFormState extends State<RunForm> {
       }
       // ------ //
       var defaultValue = p.defaultValue;
-      if (p.annotation.toLowerCase().contains('datetime')) {
+      if (p.annotation.toLowerCase().contains('datetime.datetime')) {
         _controllers[p.name] =
             DateTime.tryParse(defaultValue ?? "") ?? DateTime.now();
       } else if (p.annotation.toLowerCase().contains('int')) {
         _controllers[p.name] = defaultValue;
-      } else if (p.annotation.toLowerCase().contains('bytes')) {
+      } else if (p.annotation.toLowerCase().contains('_io.bytesio')) {
         _controllers[p.name] = null;
       } else if (p.annotation.toLowerCase().contains('bool')) {
         _controllers[p.name] = defaultValue
@@ -263,52 +264,60 @@ class _RunFormState extends State<RunForm> {
   @override
   Widget build(BuildContext context) {
     final Robot robot = widget.robot;
-    return ContentDialog(
-      constraints: BoxConstraints(
-        maxWidth: 600,
-        maxHeight: 200 + (robot.parameters.length * 50),
-      ),
-      title: Text(robot.name),
-      content: FutureBuilder<Robot>(
-        future: _robotFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: ProgressBar());
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          } else if (snapshot.hasData) {
-            return _buildForm(snapshot.data!);
-          }
-          return Text("");
-        },
-      ),
-      actions: <Widget>[
-        Button(
-          child: Text('Cancel'),
-          onPressed: () {
-            Navigator.pop(widget.dialogContext, null);
-          },
-        ),
-        FilledButton(
-          onPressed: _idLoading.values.any((element) => element == true)
-              ? null
-              : () {
-                  final Map<String, String> data = _controllers.map((
-                    key,
-                    value,
-                  ) {
-                    return MapEntry(key, value.toString());
-                  });
-                  Navigator.pop(widget.dialogContext, {
-                    "name": robot.name,
-                    "parameters": data,
-                  });
-                },
-          child: _idLoading.values.any((element) => element == true)
-              ? const Text('Waiting...')
-              : const Text('Run'),
-        ),
-      ],
+
+    return FutureBuilder<Robot>(
+      future: _robotFuture,
+      builder: (context, snapshot) {
+        final bool hasError = snapshot.hasError;
+        final bool hasData = snapshot.hasData;
+
+        return ContentDialog(
+          constraints: BoxConstraints(
+            maxWidth: 600,
+            maxHeight: 200 + (robot.parameters.length * 50),
+          ),
+          title: Text(robot.name),
+          content: () {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: ProgressBar());
+            } else if (hasError) {
+              return Text("${snapshot.error}");
+            } else if (hasData) {
+              return _buildForm(snapshot.data!);
+            }
+            return const SizedBox.shrink();
+          }(),
+          actions: <Widget>[
+            Button(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(widget.dialogContext, null);
+              },
+            ),
+            if (!hasError && hasData)
+              FilledButton(
+                onPressed: _idLoading.values.any((e) => e)
+                    ? null
+                    : () {
+                        final Map<String, String> data = _controllers.map((
+                          key,
+                          value,
+                        ) {
+                          return MapEntry(key, value.text);
+                        });
+
+                        Navigator.pop(widget.dialogContext, {
+                          "name": robot.name,
+                          "parameters": data,
+                        });
+                      },
+                child: _idLoading.values.any((e) => e)
+                    ? const Text('Waiting...')
+                    : const Text('Run'),
+              ),
+          ],
+        );
+      },
     );
   }
 }
