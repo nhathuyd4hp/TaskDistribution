@@ -458,7 +458,6 @@ class _RunFormState extends State<RunForm> {
                                 runOn!.day,
                                 runAt!.hour,
                                 runAt!.minute,
-                                runAt!.second,
                               )
                             : null;
                         Navigator.pop(widget.dialogContext, {
