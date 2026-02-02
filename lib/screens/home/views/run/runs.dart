@@ -308,7 +308,7 @@ class _RunsPageState extends State<RunsPage> {
             width: 200,
             child: Row(
               children: [
-                Text("CREATED AT", style: headerStyle),
+                Text("RUN AT", style: headerStyle),
                 const SizedBox(width: 4),
                 IconButton(
                   icon: const Icon(FluentIcons.sort, size: 12),
