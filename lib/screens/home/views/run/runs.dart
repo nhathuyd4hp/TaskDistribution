@@ -384,7 +384,9 @@ class _RunsPageState extends State<RunsPage> {
           SizedBox(
             width: 200,
             child: Text(
-              run.updatedAt.toString().split('.')[0],
+              run.updatedAt != null
+                  ? run.updatedAt.toString().split('.')[0]
+                  : "",
               style: TextStyle(
                 fontFamily: 'Consolas',
                 fontWeight: FontWeight.bold,
