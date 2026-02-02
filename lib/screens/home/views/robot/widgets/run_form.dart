@@ -453,12 +453,12 @@ class _RunFormState extends State<RunForm> {
                         final DateTime? eta =
                             (runInFuture && runOn != null && runAt != null)
                             ? DateTime(
-                                runOn!.toUtc().year,
-                                runOn!.toUtc().month,
-                                runOn!.toUtc().day,
-                                runAt!.toUtc().hour,
-                                runAt!.toUtc().minute,
-                                runAt!.toUtc().second,
+                                runOn!.year,
+                                runOn!.month,
+                                runOn!.day,
+                                runAt!.hour,
+                                runAt!.minute,
+                                runAt!.second,
                               )
                             : null;
                         Navigator.pop(widget.dialogContext, {

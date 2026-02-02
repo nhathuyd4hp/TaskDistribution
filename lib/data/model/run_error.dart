@@ -3,7 +3,7 @@ class RError {
   final DateTime createdAt;
   final String id;
   final String errorType;
-  final DateTime updatedAt;
+  final DateTime? updatedAt;
   final String message;
   final String traceback;
 
@@ -25,7 +25,9 @@ class RError {
       message: json['message'] as String? ?? '',
       traceback: json['traceback'] as String? ?? '',
       createdAt: DateTime.parse(json['created_at'] as String).toLocal(),
-      updatedAt: DateTime.parse(json['updated_at'] as String).toLocal(),
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String).toLocal()
+          : null,
     );
   }
 
@@ -37,7 +39,7 @@ class RError {
       'message': message,
       'traceback': traceback,
       'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
     };
   }
 }
