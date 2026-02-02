@@ -1,7 +1,7 @@
 #define MyAppName "Robot Automation"
-#define MyAppVersion "1.1.0"
+#define MyAppVersion "1.1.1"
 #define MyAppPublisher "VanNgocNhatHuy"
-#define MyAppExeName "task_distribution.exe"
+#define MyAppExeName "RobotAutomation.exe"
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt

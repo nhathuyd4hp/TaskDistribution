@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "task_distribution" "\0"
+            VALUE "FileDescription", "Phan mem tu dong hoa RPA" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "task_distribution" "\0"
+            VALUE "InternalName", "RobotAutomation" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "task_distribution.exe" "\0"
-            VALUE "ProductName", "task_distribution" "\0"
+            VALUE "OriginalFilename", "RobotAutomation.exe" "\0"
+            VALUE "ProductName", "Robot Automation Tool" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
