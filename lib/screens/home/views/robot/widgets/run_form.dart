@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:http/http.dart' as http;
@@ -10,8 +9,9 @@ import 'package:task_distribution/data/model/robot.dart';
 class RunForm extends StatefulWidget {
   final BuildContext dialogContext;
   final Robot robot;
-  // Constructor
+
   const RunForm({super.key, required this.dialogContext, required this.robot});
+
   @override
   State<RunForm> createState() => _RunFormState();
 }
@@ -224,10 +224,11 @@ class _RunFormState extends State<RunForm> {
     }
     return Column(
       spacing: 12,
-      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: robot.parameters.map<Widget>((param) {
-        return Row(
-          spacing: 0,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             InfoLabel(
               label: param.name
@@ -271,13 +272,11 @@ class _RunFormState extends State<RunForm> {
     super.initState();
     _robotFuture = _initRobotData();
     for (var p in widget.robot.parameters) {
-      // ------ //
       if (p.annotation.toLowerCase().contains("type.api")) {
         _idLoading[p.name] = true;
       } else {
         _idLoading[p.name] = false;
       }
-      // ------ //
       var defaultValue = p.defaultValue;
       if (p.annotation.toLowerCase().contains('datetime.datetime')) {
         _controllers[p.name] =
@@ -307,19 +306,20 @@ class _RunFormState extends State<RunForm> {
         final bool hasData = snapshot.hasData;
 
         return ContentDialog(
-          constraints: BoxConstraints(
-            maxWidth: runInFuture ? 800 : 550,
-            maxHeight: runInFuture
-                ? max(400, 200 + (robot.parameters.length * 50))
-                : 275 + (robot.parameters.length * 50),
-          ),
+          constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
           title: Column(
-            spacing: 15,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Row(
                 children: [
-                  Text(robot.name),
-                  Spacer(),
+                  Expanded(
+                    child: Text(
+                      robot.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   ToggleSwitch(
                     checked: runInFuture,
                     onChanged: (value) {
@@ -337,6 +337,7 @@ class _RunFormState extends State<RunForm> {
                   ),
                 ],
               ),
+              const SizedBox(height: 10),
               Divider(
                 size: double.infinity,
                 style: DividerThemeData(
@@ -349,89 +350,90 @@ class _RunFormState extends State<RunForm> {
               ),
             ],
           ),
-          content: () {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: ProgressBar());
-            } else if (hasError) {
-              return Text("${snapshot.error}");
-            } else if (hasData) {
-              return Row(
-                spacing: 25,
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+          content: hasData
+              ? SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (robot.parameters.isNotEmpty) ...[
                         const Text(
-                          "Input Parameter",
+                          "Input Parameters",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 12),
                         _buildForm(snapshot.data!),
+                        const SizedBox(height: 20),
                       ],
-                    ),
-                  ),
-                  if (runInFuture) ...[
-                    Divider(
-                      direction: Axis.vertical,
-                      style: DividerThemeData(
-                        thickness: 1,
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(4),
+
+                      if (runInFuture) ...[
+                        Divider(
+                          size: double.infinity,
+                          style: DividerThemeData(
+                            thickness: 0.5,
+                            decoration: BoxDecoration(
+                              color: FluentTheme.of(context).accentColor,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Estimated Time",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          "Execution Time",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
-                          const SizedBox(height: 20),
-                          InfoLabel(
-                            label: "Run on",
-                            labelStyle: TextStyle(fontWeight: FontWeight.w500),
-                            child: DatePicker(
-                              selected: runOn,
-                              onChanged: (date) => setState(() => runOn = date),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: InfoLabel(
+                                label: "Run on",
+                                labelStyle: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                child: DatePicker(
+                                  selected: runOn,
+                                  onChanged: (date) =>
+                                      setState(() => runOn = date),
+                                ),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          InfoLabel(
-                            label: "Run at",
-                            labelStyle: TextStyle(fontWeight: FontWeight.w500),
-                            child: TimePicker(
-                              selected: runAt,
-                              hourFormat: HourFormat.HH,
-                              onChanged: (time) => setState(() => runAt = time),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: InfoLabel(
+                                label: "Run at",
+                                labelStyle: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                child: TimePicker(
+                                  selected: runAt,
+                                  hourFormat: HourFormat.HH,
+                                  onChanged: (time) =>
+                                      setState(() => runAt = time),
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ],
-              );
-            }
-            return const SizedBox.shrink();
-          }(),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                )
+              : (hasError
+                    ? Center(child: Text("Error: ${snapshot.error}"))
+                    : const Center(child: ProgressBar())),
           actions: <Widget>[
             Button(
-              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.pop(widget.dialogContext, null);
               },
+              child: const Text('Cancel'),
             ),
             if (!hasError && hasData)
               FilledButton(
@@ -458,6 +460,7 @@ class _RunFormState extends State<RunForm> {
                                 runOn!.day,
                                 runAt!.hour,
                                 runAt!.minute,
+                                runAt!.second,
                               )
                             : null;
                         Navigator.pop(widget.dialogContext, {
@@ -468,9 +471,7 @@ class _RunFormState extends State<RunForm> {
                       },
                 child: _idLoading.values.any((e) => e)
                     ? const Text('Waiting...')
-                    : runInFuture
-                    ? const Text('Confirm')
-                    : const Text('Run'),
+                    : Text(runInFuture ? 'Schedule' : 'Run Now'),
               ),
           ],
         );

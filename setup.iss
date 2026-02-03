@@ -1,5 +1,5 @@
 #define MyAppName "Robot Automation"
-#define MyAppVersion "1.2.0"
+#define MyAppVersion "1.2.2"
 #define MyAppPublisher "VanNgocNhatHuy"
 #define MyAppExeName "RobotAutomation.exe"
 #define MyAppAssocName MyAppName + " File"
