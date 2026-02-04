@@ -66,26 +66,6 @@ class _RunFormState extends State<RunForm> {
             if (isAsset) ...[
               IconButton(
                 icon: Icon(FluentIcons.delete, color: Colors.red),
-                onPressed: () {
-                  // Delete file
-                },
-              ),
-            ],
-            Expanded(
-              child: TextBox(
-                controller: TextEditingController(
-                  text: singleValue.toString().replaceAll(r'\u3000', ' '),
-                ),
-                readOnly: true,
-                prefix: const Padding(
-                  padding: EdgeInsets.only(left: 8.0),
-                  child: Icon(FluentIcons.lock, size: 10),
-                ),
-              ),
-            ),
-            if (isAsset) ...[
-              FilledButton(
-                child: Text("Preview"),
                 onPressed: () async {
                   if (parameter.defaultValue == null ||
                       !RegExp(
@@ -97,11 +77,29 @@ class _RunFormState extends State<RunForm> {
                   final String bucket = uri.queryParameters['bucket'] ?? "";
                   final String objectName =
                       uri.queryParameters['objectName'] ?? "";
-                  final String previewURL =
-                      "${RobotAutomation.backendUrl}/api/assets/$bucket?objectName=$objectName&preview=True";
-                  await launchUrl(Uri.parse(previewURL));
+                  final String deleteUrl =
+                      "${RobotAutomation.backendUrl}/api/assets/${bucket.toLowerCase()}?objectName=$objectName";
+                  try {
+                    final response = await http.delete(Uri.parse(deleteUrl));
+                    setState(() {
+                      _idLoading[parameter.name] = true;
+                    });
+                    if (response.statusCode == 200) {
+                      setState(() {
+                        _controllers[parameter.name] = null;
+                      });
+                    }
+                  } catch (e) {
+                    //
+                  } finally {
+                    setState(() {
+                      _idLoading[parameter.name] = false;
+                    });
+                  }
                 },
               ),
+            ],
+            if (isAsset) ...[
               FilledButton(
                 onPressed: () async {
                   // ----- //
