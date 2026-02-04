@@ -100,6 +100,33 @@ class _RunFormState extends State<RunForm> {
               ),
             ],
             if (isAsset) ...[
+              Expanded(
+                child: FilledButton(
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(FluentIcons.view, size: 16),
+                      SizedBox(width: 8),
+                      Text("View File"),
+                    ],
+                  ),
+                  onPressed: () async {
+                    if (parameter.defaultValue == null ||
+                        !RegExp(
+                          r'^/api/type/objects\?bucket=[^&]+&objectName=.+$',
+                        ).hasMatch(parameter.defaultValue)) {
+                      return;
+                    }
+                    final Uri uri = Uri.parse(parameter.defaultValue!);
+                    final String bucket = uri.queryParameters['bucket'] ?? "";
+                    final String objectName =
+                        uri.queryParameters['objectName'] ?? "";
+                    final String previewURL =
+                        "${RobotAutomation.backendUrl}/api/assets/$bucket?objectName=$objectName&preview=True";
+                    await launchUrl(Uri.parse(previewURL));
+                  },
+                ),
+              ),
               FilledButton(
                 onPressed: () async {
                   // ----- //
