@@ -66,7 +66,9 @@ class _RunFormState extends State<RunForm> {
             if (isAsset) ...[
               IconButton(
                 icon: Icon(FluentIcons.delete, color: Colors.red),
-                onPressed: () {},
+                onPressed: () {
+                  // Delete file
+                },
               ),
             ],
             Expanded(
@@ -75,7 +77,6 @@ class _RunFormState extends State<RunForm> {
                   text: singleValue.toString().replaceAll(r'\u3000', ' '),
                 ),
                 readOnly: true,
-                enabled: false,
                 prefix: const Padding(
                   padding: EdgeInsets.only(left: 8.0),
                   child: Icon(FluentIcons.lock, size: 10),
