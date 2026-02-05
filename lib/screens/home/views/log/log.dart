@@ -307,7 +307,9 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
               _buildInfoItem(
                 "Parameters",
                 run.parameters != null
-                    ? jsonDecode(run.parameters!).toString()
+                    ? (jsonDecode(run.parameters!) as Map).entries
+                          .map((e) => '${e.key}: ${e.value}')
+                          .join('\n')
                     : "",
                 FluentIcons.variable,
               ),
@@ -365,7 +367,6 @@ class _ExecutionLogPageState extends State<ExecutionLogPage> {
             ),
             Text(
               value,
-              maxLines: 1,
               style: const TextStyle(fontWeight: FontWeight.w600),
               overflow: TextOverflow.ellipsis,
             ),

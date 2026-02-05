@@ -23,6 +23,11 @@ class RobotProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> reload() async {
+    _robots = await repository.getRobots();
+    notifyListeners();
+  }
+
   Future<void> run(Map<String, dynamic> parameters) async {
     final Run? run = await repository.run(parameters);
     if (run != null) return server.reload();

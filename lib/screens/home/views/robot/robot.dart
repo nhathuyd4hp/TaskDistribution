@@ -357,24 +357,24 @@ class _RobotPageState extends State<RobotPage> {
   }
 
   Future<void> _handleRun(BuildContext context, Robot robot) async {
-    final provider = context.read<RobotProvider>();
+    final rProvider = context.read<RobotProvider>();
     final dynamic parameters = await showDialog(
       context: context,
       builder: (ctx) => RunForm(dialogContext: ctx, robot: robot),
     );
     if (parameters != null && parameters is Map<String, dynamic>) {
-      provider.run(parameters);
+      rProvider.run(parameters);
     }
   }
+}
 
-  Future<void> _handleSchedule(BuildContext context, Robot robot) async {
-    final provider = context.read<ScheduleProvider>();
-    final dynamic schedule = await showDialog(
-      context: context,
-      builder: (ctx) => ScheduleForm(dialogContext: ctx),
-    );
-    if (schedule != null && schedule is Map<String, String>) {
-      provider.setSchedule(robot, schedule);
-    }
+Future<void> _handleSchedule(BuildContext context, Robot robot) async {
+  final provider = context.read<ScheduleProvider>();
+  final dynamic schedule = await showDialog(
+    context: context,
+    builder: (ctx) => ScheduleForm(dialogContext: ctx),
+  );
+  if (schedule != null && schedule is Map<String, String>) {
+    provider.setSchedule(robot, schedule);
   }
 }
