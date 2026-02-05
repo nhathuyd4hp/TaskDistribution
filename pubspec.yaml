@@ -1,7 +1,7 @@
 name: task_distribution
 description: "Robot Automation"
 
-version: 1.2.3
+version: 1.2.6
 
 environment:
   sdk: ^3.9.2
